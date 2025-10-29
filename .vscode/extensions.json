@@ -1,0 +1,9 @@
+{
+	"recommendations": [
+		"esbenp.prettier-vscode",
+		"golang.go",
+		"streetsidesoftware.code-spell-checker",
+		"gruntfuggly.todo-tree",
+		"be5invis.toml"
+	]
+}

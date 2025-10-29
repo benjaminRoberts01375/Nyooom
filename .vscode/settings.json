@@ -1,0 +1,63 @@
+{
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.tabSize": 2,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"files.insertFinalNewline": true,
+	"files.trimTrailingWhitespace": true,
+
+	"files.exclude": {
+		"**/.git": true,
+		".gitattributes": true,
+		"**/.DS_Store": true,
+		"frontend/node_modules": true,
+		"frontend/src/vite-env.d.ts": true,
+		"frontend/bun-env.d.ts": true,
+		"frontend/bun.lock": true,
+		"frontend/bunfig.toml": true,
+		"backend/go.sum": true,
+		"backend/tmp": true,
+		"art projects": true,
+		"LICENSE": true,
+		"README.md": true,
+		"CONTRIBUTING.md": true,
+		"SECURITY.md": true,
+		"checkbag-volume-backup": true,
+		".markdownlint.json": true
+	},
+
+	"[go]": {
+		"editor.defaultFormatter": "golang.go"
+	},
+
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[json]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[html]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[css]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+
+	"[markdown]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.wordWrap": "on"
+	},
+
+	// Exclude DB directory from Prettier formatting
+	"prettier.ignorePath": ".prettierignore",
+	"files.associations": {
+		"bun.lock": "jsonc"
+	}
+}

@@ -1,0 +1,32 @@
+{
+	"language": "en",
+	"ignorePaths": [
+		"bun.lock",
+		"/frontend/node_modules",
+		".gitignore",
+		"go.sum",
+		"go.mod",
+		"Dockerfile",
+		".env"
+	],
+	"words": [
+		"uuid-ossp",
+		"initdb",
+		"sslmode",
+		"GOPRIVATE",
+		"dbcoms",
+		"nosniff",
+		"SAMEORIGIN",
+		"fsnotify",
+		"abcdefghijkmnopqrstuvwxyz",
+		"ABCDEFGHJKLMNPQRSTUVWXYZ",
+		"appuser",
+		"requirepass",
+		"homelab",
+		"buildx",
+		"benjaminroberts01375",
+		"softprops",
+		"Nyooom"
+	],
+	"flagWords": ["hte", "nyoom", "yoom", "yooom"]
+}
