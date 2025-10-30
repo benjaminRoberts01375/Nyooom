@@ -28,7 +28,10 @@
 		"softprops",
 		"Nyooom",
 		"Hset",
-		"Hgetall"
+		"Hgetall",
+		"Lpush",
+		"Lrem",
+		"Lrange"
 	],
 	"flagWords": ["hte", "nyoom", "yoom", "yooom"]
 }

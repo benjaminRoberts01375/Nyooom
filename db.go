@@ -19,6 +19,9 @@ type BasicDB interface {
 	SetHash(ctx context.Context, key string, values map[string]string) error
 	GetHash(ctx context.Context, key string) (map[string]string, error)
 	DeleteHash(ctx context.Context, key string) error
+	AddToList(ctx context.Context, key string, value string) error
+	RemoveFromList(ctx context.Context, key string, value string) error
+	GetList(ctx context.Context, key string) ([]string, error)
 }
 
 type ValkeyDB struct {
@@ -149,6 +152,30 @@ func (db *ValkeyDB) DeleteHash(ctx context.Context, key string) error {
 		return errors.New("Could not delete hash for key " + key + ": " + err.Error())
 	}
 	return nil
+}
+
+func (db *ValkeyDB) AddToList(ctx context.Context, key string, value string) error {
+	err := db.db.Do(ctx, db.db.B().Lpush().Key(key).Element(value).Build()).Error()
+	if err != nil {
+		return errors.New("Could not add value " + value + " to list " + key + ": " + err.Error())
+	}
+	return nil
+}
+
+func (db *ValkeyDB) RemoveFromList(ctx context.Context, key string, value string) error {
+	err := db.db.Do(ctx, db.db.B().Lrem().Key(key).Count(1).Element(value).Build()).Error()
+	if err != nil {
+		return errors.New("Could not remove value " + value + " from list " + key + ": " + err.Error())
+	}
+	return nil
+}
+
+func (db *ValkeyDB) GetList(ctx context.Context, key string) ([]string, error) {
+	list, err := db.db.Do(ctx, db.db.B().Lrange().Key(key).Start(0).Stop(-1).Build()).AsStrSlice()
+	if err != nil {
+		return nil, errors.New("Could not get list " + key + ": " + err.Error())
+	}
+	return list, nil
 }
 
 // Complex DB functions to have more complex DBs implement
