@@ -41,6 +41,28 @@ func epLogin(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
 	}
 }
 
+func epJWTLogin(jwtService JWTService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost { // Only allow POST requests
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		err := r.ParseForm()
+		if err != nil {
+			// TODO: Handle error
+		}
+		password := r.Form.Get("jwt")
+		if password == "" {
+			// TODO: Handle error
+		}
+		_, valid := jwtService.ValidateJWT(password)
+		if !valid {
+			// TODO: Handle error
+		}
+		// TODO: Redirect to dashboard
+	}
+}
+
 func epCreateUser(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost { // Only allow POST requests
