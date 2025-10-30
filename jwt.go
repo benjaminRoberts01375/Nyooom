@@ -24,8 +24,8 @@ type JWTService struct {
 	timeFunc TimeFunc
 }
 
-func NewJWTService(secret string, timeGenerator TimeFunc) *JWTService {
-	return &JWTService{
+func NewJWTService(secret string, timeGenerator TimeFunc) JWTService {
+	return JWTService{
 		secret:   []byte(secret),
 		timeFunc: timeGenerator,
 	}
@@ -56,7 +56,7 @@ func (s *JWTService) ValidateJWT(tokenString string) (*Claims, bool) {
 	return claims, claims.ExpiresAt.After(s.timeFunc())
 }
 
-func loadJWTSecret(db AdvancedDB) *JWTService {
+func loadJWTSecret(db AdvancedDB) JWTService {
 	// Check if the JWT secret was passed in as an environment variable
 	jwtSecret := os.Getenv("JWT_SECRET")
 	if jwtSecret != "" {

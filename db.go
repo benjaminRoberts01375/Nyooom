@@ -43,6 +43,7 @@ type AdvancedDB interface {
 	SetJWT(ctx context.Context, jwt string) error
 	UserExists(ctx context.Context) (bool, error)
 	SetUser(ctx context.Context, passwordHash []byte) error
+	GetUser(ctx context.Context) (string, error)
 	IncrementLinkClicks(ctx context.Context, linkSlug string, amount int) error
 }
 
@@ -331,6 +332,16 @@ func (db DB) SetUser(ctx context.Context, passwordHash []byte) error {
 		return errors.New("Could not set user: " + err.Error())
 	}
 	return nil
+}
+
+func (db DB) GetUser(ctx context.Context) (string, error) {
+	user, err := db.basicDB.Get(ctx, "user-hash")
+	if err != nil {
+		return "", errors.New("Could not get user: " + err.Error())
+	} else if user == "" {
+		return "", errors.New("User does not exist")
+	}
+	return user, nil
 }
 
 func (db DB) IncrementLinkClicks(ctx context.Context, linkSlug string, amount int) error {
