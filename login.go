@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -37,7 +38,22 @@ func epLogin(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
 		if !jwtService.ValidatePassword(password, []byte(realHash)) {
 			// TODO: Handle error
 		}
-		// TODO: Redirect to dashboard
+		// Generate a new JWT
+		token, err := jwtService.GenerateJWT(LoginDuration)
+		if err != nil {
+			// TODO: Handle error
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     CookieName,
+			Value:    token,
+			HttpOnly: false,
+			Secure:   false,
+			SameSite: http.SameSiteStrictMode,
+			Expires:  time.Now().Add(LoginDuration),
+			Path:     "/",
+		})
+
 	}
 }
 
