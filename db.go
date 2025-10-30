@@ -23,6 +23,7 @@ type BasicDB interface {
 	AddToList(ctx context.Context, key string, value string) error
 	RemoveFromList(ctx context.Context, key string, value string) error
 	GetList(ctx context.Context, key string) ([]string, error)
+	IncrementHashField(ctx context.Context, key string, field string, amount int) error
 }
 
 type ValkeyDB struct {
@@ -42,6 +43,7 @@ type AdvancedDB interface {
 	SetJWT(ctx context.Context, jwt string) error
 	UserExists(ctx context.Context) (bool, error)
 	SetUser(ctx context.Context, passwordHash []byte) error
+	IncrementLinkClicks(ctx context.Context, linkSlug string, amount int) error
 }
 
 type DB struct {
@@ -196,6 +198,14 @@ func (db *ValkeyDB) GetList(ctx context.Context, key string) ([]string, error) {
 	return list, nil
 }
 
+func (db *ValkeyDB) IncrementHashField(ctx context.Context, key string, field string, amount int) error {
+	err := db.db.Do(ctx, db.db.B().Hincrby().Key(db.prefix+key).Field(field).Increment(int64(amount)).Build()).Error()
+	if err != nil {
+		return errors.New("Could not increment hash field " + field + " for key " + key + " by " + strconv.Itoa(amount) + ": " + err.Error())
+	}
+	return nil
+}
+
 // Complex DB functions to have more complex DBs implement
 
 func (db DB) GetVersion(ctx context.Context) (string, error) {
@@ -319,6 +329,14 @@ func (db DB) SetUser(ctx context.Context, passwordHash []byte) error {
 	err := db.basicDB.Set(ctx, "user-hash", string(passwordHash), 0)
 	if err != nil {
 		return errors.New("Could not set user: " + err.Error())
+	}
+	return nil
+}
+
+func (db DB) IncrementLinkClicks(ctx context.Context, linkSlug string, amount int) error {
+	err := db.basicDB.IncrementHashField(ctx, linkSlug, "clicks", amount)
+	if err != nil {
+		return errors.New("Could not increment clicks for link " + linkSlug + ": " + err.Error())
 	}
 	return nil
 }

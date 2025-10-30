@@ -31,7 +31,8 @@
 		"Hgetall",
 		"Lpush",
 		"Lrem",
-		"Lrange"
+		"Lrange",
+		"Hincrby"
 	],
 	"flagWords": ["hte", "nyoom", "yoom", "yooom"]
 }
