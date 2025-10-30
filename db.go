@@ -13,6 +13,7 @@ import (
 )
 
 type BasicDB interface {
+	Exists(ctx context.Context, key string) (bool, error)
 	Set(ctx context.Context, key string, value string, duration time.Duration) error
 	Get(ctx context.Context, key string) (string, error)
 	Delete(ctx context.Context, key string) error
@@ -95,6 +96,14 @@ func (db DB) versioning() {
 	}
 }
 
+func (db *ValkeyDB) Exists(ctx context.Context, key string) (bool, error) {
+	exists, err := db.db.Do(ctx, db.db.B().Exists().Key(db.prefix+key).Build()).AsBool()
+	if err != nil {
+		return false, errors.New("Could not check if key " + key + " exists: " + err.Error())
+	}
+	return exists, nil
+}
+
 func (db *ValkeyDB) Get(ctx context.Context, key string) (string, error) {
 	value, err := db.db.Do(ctx, db.db.B().Get().Key(db.prefix+key).Build()).ToString()
 	if err != nil {
@@ -157,7 +166,6 @@ func (db *ValkeyDB) DeleteHash(ctx context.Context, key string) error {
 }
 
 func (db *ValkeyDB) AddToList(ctx context.Context, key string, value string) error {
-	logging.Println("Adding " + db.prefix + key + " with " + value)
 	err := db.db.Do(ctx, db.db.B().Lpush().Key(db.prefix+key).Element(value).Build()).Error()
 	if err != nil {
 		return errors.New("Could not add value " + value + " to list " + key + ": " + err.Error())
