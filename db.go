@@ -91,7 +91,10 @@ func (db DB) versioning() {
 	currentVersion, err := db.GetVersion(context.Background())
 	if err != nil || currentVersion != expectedDBVersion {
 		logging.PrintErrStr("Failed to get current version: " + err.Error() + ". Attempting to set version to " + expectedDBVersion)
-		db.SetVersion(context.Background(), expectedDBVersion)
+		err = db.SetVersion(context.Background(), expectedDBVersion)
+		if err != nil {
+			panic("Failed to set version: " + err.Error())
+		}
 		return
 	}
 }
