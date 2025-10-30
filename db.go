@@ -167,7 +167,7 @@ func (db *ValkeyDB) SetHash(ctx context.Context, key string, values map[string]s
 }
 
 func (db *ValkeyDB) DeleteHash(ctx context.Context, key string) error {
-	err := db.db.Do(ctx, db.db.B().Del().Key(key).Build()).Error()
+	err := db.db.Do(ctx, db.db.B().Del().Key(db.prefix+key).Build()).Error()
 	if err != nil {
 		return errors.New("Could not delete hash for key " + key + ": " + err.Error())
 	}
@@ -183,7 +183,7 @@ func (db *ValkeyDB) AddToList(ctx context.Context, key string, value string) err
 }
 
 func (db *ValkeyDB) RemoveFromList(ctx context.Context, key string, value string) error {
-	err := db.db.Do(ctx, db.db.B().Lrem().Key(key).Count(1).Element(value).Build()).Error()
+	err := db.db.Do(ctx, db.db.B().Lrem().Key(db.prefix+key).Count(1).Element(value).Build()).Error()
 	if err != nil {
 		return errors.New("Could not remove value " + value + " from list " + key + ": " + err.Error())
 	}
