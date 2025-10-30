@@ -101,5 +101,5 @@ func epUserExists(db AdvancedDB) http.HandlerFunc {
 }
 
 func (s *JWTService) ValidatePassword(passwordAttempt string, realPasswordHash []byte) bool {
-	return bcrypt.CompareHashAndPassword([]byte(passwordAttempt), []byte(passwordAttempt)) == nil
+	return bcrypt.CompareHashAndPassword(realPasswordHash, []byte(passwordAttempt)) == nil
 }
