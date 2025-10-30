@@ -40,6 +40,8 @@ type AdvancedDB interface {
 	GetLinks(ctx context.Context) ([]Link, error)
 	GetJWT(ctx context.Context) (string, error)
 	SetJWT(ctx context.Context, jwt string) error
+	UserExists(ctx context.Context) (bool, error)
+	SetUser(ctx context.Context, passwordHash []byte) error
 }
 
 type DB struct {
@@ -290,9 +292,33 @@ func (db DB) GetLinks(ctx context.Context) ([]Link, error) {
 }
 
 func (db DB) GetJWT(ctx context.Context) (string, error) {
-	return db.basicDB.Get(ctx, "jwt")
+	jwt, err := db.basicDB.Get(ctx, "jwt")
+	if err != nil {
+		return "", errors.New("Could not get jwt: " + err.Error())
+	}
+	return jwt, nil
 }
 
 func (db DB) SetJWT(ctx context.Context, jwt string) error {
-	return db.basicDB.Set(ctx, "jwt", jwt, 0)
+	err := db.basicDB.Set(ctx, "jwt", jwt, 0)
+	if err != nil {
+		return errors.New("Could not set jwt: " + err.Error())
+	}
+	return nil
+}
+
+func (db DB) UserExists(ctx context.Context) (bool, error) {
+	exists, err := db.basicDB.Exists(ctx, "user-hash")
+	if err != nil {
+		return false, errors.New("Could not check if user exists: " + err.Error())
+	}
+	return exists, nil
+}
+
+func (db DB) SetUser(ctx context.Context, passwordHash []byte) error {
+	err := db.basicDB.Set(ctx, "user-hash", string(passwordHash), 0)
+	if err != nil {
+		return errors.New("Could not set user: " + err.Error())
+	}
+	return nil
 }

@@ -21,5 +21,8 @@ func setupEndpoints(db AdvancedDB) {
 	http.HandleFunc("/api/create-link", epCreateLink(db))
 	http.HandleFunc("/api/delete-link", epDeleteLink(db))
 	http.HandleFunc("/api/get-links", epGetLinks(db))
+	http.HandleFunc("/api/user-exists", epUserExists(db))
+	http.HandleFunc("/api/login", epLogin(db))
+	http.HandleFunc("/api/create-user", epCreateUser(db))
 	http.HandleFunc("/", epRedirect(db))
 }
