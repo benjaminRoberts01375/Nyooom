@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"net/http"
 	"nyooom/logging"
@@ -47,7 +46,7 @@ func epCreateLink(db AdvancedDB) http.HandlerFunc {
 			// TODO: Handle error
 			return
 		}
-		err = db.SetLink(context.Background(), link)
+		err = db.SetLink(r.Context(), link)
 		if err != nil {
 			logging.PrintErrStr("Failed to create link \"" + link.Slug + ".\" in database: " + err.Error())
 			// TODO: Handle error
@@ -61,7 +60,7 @@ func epCreateLink(db AdvancedDB) http.HandlerFunc {
 func epDeleteLink(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		linkSlug := r.URL.Query().Get("slug")
-		err := db.DeleteLink(context.Background(), linkSlug)
+		err := db.DeleteLink(r.Context(), linkSlug)
 		if err != nil {
 			logging.PrintErrStr("Failed to delete link \"" + linkSlug + ".\" " + err.Error())
 			// TODO: Handle error
@@ -74,7 +73,7 @@ func epDeleteLink(db AdvancedDB) http.HandlerFunc {
 
 func epGetLinks(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		links, err := db.GetLinks(context.Background())
+		links, err := db.GetLinks(r.Context())
 		if err != nil {
 			logging.PrintErrStr("Failed to get links: " + err.Error())
 			// TODO: Handle error
