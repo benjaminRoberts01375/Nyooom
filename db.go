@@ -225,7 +225,15 @@ func (db DB) GetLink(ctx context.Context, linkSlug string) (Link, error) {
 }
 
 func (db DB) SetLink(ctx context.Context, link Link) error {
-	err := db.basicDB.SetHash(ctx, link.Slug, map[string]string{
+	exists, err := db.basicDB.Exists(ctx, link.Slug)
+	if err != nil {
+		return errors.New("Could not check if link " + link.Slug + " exists: " + err.Error())
+	}
+	if exists {
+		return errors.New("Link " + link.Slug + " already exists")
+	}
+
+	err = db.basicDB.SetHash(ctx, link.Slug, map[string]string{
 		"url":    link.URL,
 		"clicks": strconv.Itoa(link.Clicks),
 	})

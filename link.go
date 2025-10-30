@@ -47,7 +47,12 @@ func epCreateLink(db AdvancedDB) http.HandlerFunc {
 			// TODO: Handle error
 			return
 		}
-		db.SetLink(context.Background(), link)
+		err = db.SetLink(context.Background(), link)
+		if err != nil {
+			logging.PrintErrStr("Failed to create link \"" + link.Slug + ".\" in database: " + err.Error())
+			// TODO: Handle error
+			return
+		}
 		// TODO: Handle success
 		logging.Println("Created link \"" + link.Slug + "\"")
 	}
