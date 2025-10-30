@@ -10,10 +10,10 @@ services:
     networks:
       - network
     ports:
-      - "${CACHE_PORT}:6379"
+      - "${DB_PORT}:6379"
     volumes:
-      - valkey_data:/data
-    command: valkey-server --requirepass ${CACHE_PASSWORD}
+      - nyooom-valkey-data:/data
+    command: valkey-server --requirepass ${DB_PASSWORD}
 
   nyooom-backend:
     build:
@@ -34,11 +34,11 @@ services:
       - "${WEB_UI_PORT}:8080"
     volumes:
       - .:/app
-      - backend-data:/home/appuser/Nyooom
-      - backend-data:/root/Nyooom
+      - nyooom-backend-data:/home/appuser/Nyooom
+      - nyooom-backend-data:/root/Nyooom
 
 volumes:
-  valkey_data:
-    name: valkey-data
-  backend-data:
-    name: backend-data
+  nyooom-valkey-data:
+    name: nyooom-valkey-data
+  nyooom-backend-data:
+    name: nyooom-backend-data
