@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
 	"errors"
+	"net/http"
+	"nyooom/logging"
 	"strconv"
 	"strings"
 )
@@ -36,4 +39,47 @@ func newLink(slug string, url string) (Link, error) {
 
 func (link Link) String() string {
 	return link.ID + ": " + link.Slug + " -> " + link.URL + " has " + strconv.Itoa(link.Clicks) + " clicks"
+}
+
+func epCreateLink(db AdvancedDB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		link, err := newLink(r.URL.Query().Get("slug"), r.URL.Query().Get("url"))
+		if err != nil {
+			logging.PrintErrStr("Failed to create link \"" + link.ID + ".\" " + err.Error())
+			// TODO: Handle error
+			return
+		}
+		db.SetLink(context.Background(), link)
+		// TODO: Handle success
+		logging.Println("Created link \"" + link.ID + "\"")
+	}
+}
+
+func epDeleteLink(db AdvancedDB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		linkID := r.URL.Query().Get("linkID")
+		err := db.DeleteLink(context.Background(), linkID)
+		if err != nil {
+			logging.PrintErrStr("Failed to delete link \"" + linkID + ".\" " + err.Error())
+			// TODO: Handle error
+			return
+		}
+		logging.Println("Deleted link \"" + linkID + "\"")
+		// TODO: Handle success
+	}
+}
+
+func epGetLinks(db AdvancedDB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		links, err := db.GetLinks(context.Background())
+		if err != nil {
+			logging.PrintErrStr("Failed to get links: " + err.Error())
+			// TODO: Handle error
+			return
+		}
+		// TODO Handle success
+		for _, link := range links {
+			logging.Println(link)
+		}
+	}
 }
