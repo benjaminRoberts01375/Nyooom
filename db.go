@@ -16,6 +16,9 @@ type BasicDB interface {
 	Set(ctx context.Context, key string, value string, duration time.Duration) error
 	Get(ctx context.Context, key string) (string, error)
 	Delete(ctx context.Context, key string) error
+	SetHash(ctx context.Context, key string, values map[string]string) error
+	GetHash(ctx context.Context, key string) (map[string]string, error)
+	DeleteHash(ctx context.Context, key string) error
 }
 
 type ValkeyDB struct {
@@ -113,6 +116,34 @@ func (db *ValkeyDB) Delete(ctx context.Context, key string) error {
 	err := db.db.Do(ctx, db.db.B().Del().Key(db.prefix+key).Build()).Error()
 	if err != nil {
 		return errors.New("Could not delete key " + key + ": " + err.Error())
+	}
+	return nil
+}
+
+func (db *ValkeyDB) GetHash(ctx context.Context, key string) (map[string]string, error) {
+	hash, err := db.db.Do(ctx, db.db.B().Hgetall().Key(key).Build()).AsStrMap()
+	if err != nil {
+		return nil, errors.New("Could not get hash for key " + key + ": " + err.Error())
+	}
+	return hash, nil
+}
+
+func (db *ValkeyDB) SetHash(ctx context.Context, key string, values map[string]string) error {
+	hash := db.db.B().Hset().Key(key).FieldValue()
+	for field, value := range values {
+		hash = hash.FieldValue(field, value)
+	}
+	err := db.db.Do(ctx, hash.Build()).Error()
+	if err != nil {
+		return errors.New("Could not set hash for key " + key + ": " + err.Error())
+	}
+	return nil
+}
+
+func (db *ValkeyDB) DeleteHash(ctx context.Context, key string) error {
+	err := db.db.Do(ctx, db.db.B().Del().Key(key).Build()).Error()
+	if err != nil {
+		return errors.New("Could not delete hash for key " + key + ": " + err.Error())
 	}
 	return nil
 }
