@@ -33,9 +33,9 @@ type AdvancedDB interface {
 	GetVersion(ctx context.Context) (string, error)
 	SetVersion(ctx context.Context, version string) error
 	SetLink(ctx context.Context, link Link) error
-	GetLink(ctx context.Context, linkID string) (Link, error)
-	DeleteLink(ctx context.Context, linkID string) error
-	GetLinkIDs(ctx context.Context) ([]string, error)
+	GetLink(ctx context.Context, linkSlug string) (Link, error)
+	DeleteLink(ctx context.Context, linkSlug string) error
+	GetLinkSlugs(ctx context.Context) ([]string, error)
 	GetLinks(ctx context.Context) ([]Link, error)
 }
 
@@ -129,7 +129,7 @@ func (db *ValkeyDB) Delete(ctx context.Context, key string) error {
 }
 
 func (db *ValkeyDB) GetHash(ctx context.Context, key string) (map[string]string, error) {
-	hash, err := db.db.Do(ctx, db.db.B().Hgetall().Key(key).Build()).AsStrMap()
+	hash, err := db.db.Do(ctx, db.db.B().Hgetall().Key(db.prefix+key).Build()).AsStrMap()
 	if err != nil {
 		return nil, errors.New("Could not get hash for key " + key + ": " + err.Error())
 	}
@@ -137,7 +137,7 @@ func (db *ValkeyDB) GetHash(ctx context.Context, key string) (map[string]string,
 }
 
 func (db *ValkeyDB) SetHash(ctx context.Context, key string, values map[string]string) error {
-	hash := db.db.B().Hset().Key(key).FieldValue()
+	hash := db.db.B().Hset().Key(db.prefix + key).FieldValue()
 	for field, value := range values {
 		hash = hash.FieldValue(field, value)
 	}
@@ -157,7 +157,8 @@ func (db *ValkeyDB) DeleteHash(ctx context.Context, key string) error {
 }
 
 func (db *ValkeyDB) AddToList(ctx context.Context, key string, value string) error {
-	err := db.db.Do(ctx, db.db.B().Lpush().Key(key).Element(value).Build()).Error()
+	logging.Println("Adding " + db.prefix + key + " with " + value)
+	err := db.db.Do(ctx, db.db.B().Lpush().Key(db.prefix+key).Element(value).Build()).Error()
 	if err != nil {
 		return errors.New("Could not add value " + value + " to list " + key + ": " + err.Error())
 	}
@@ -173,7 +174,7 @@ func (db *ValkeyDB) RemoveFromList(ctx context.Context, key string, value string
 }
 
 func (db *ValkeyDB) GetList(ctx context.Context, key string) ([]string, error) {
-	list, err := db.db.Do(ctx, db.db.B().Lrange().Key(key).Start(0).Stop(-1).Build()).AsStrSlice()
+	list, err := db.db.Do(ctx, db.db.B().Lrange().Key(db.prefix+key).Start(0).Stop(-1).Build()).AsStrSlice()
 	if err != nil {
 		return nil, errors.New("Could not get list " + key + ": " + err.Error())
 	}
@@ -198,18 +199,17 @@ func (db DB) SetVersion(ctx context.Context, version string) error {
 	return nil
 }
 
-func (db DB) GetLink(ctx context.Context, linkID string) (Link, error) {
-	rawLink, err := db.basicDB.GetHash(ctx, linkID)
+func (db DB) GetLink(ctx context.Context, linkSlug string) (Link, error) {
+	rawLink, err := db.basicDB.GetHash(ctx, linkSlug)
 	if err != nil {
-		return Link{}, errors.New("Could not get link " + linkID + ": " + err.Error())
+		return Link{}, errors.New("Could not get link " + linkSlug + ": " + err.Error())
 	}
 	clicks, err := strconv.Atoi(rawLink["clicks"])
 	if err != nil {
-		return Link{}, errors.New("Could not get clicks for link " + linkID + ": " + err.Error())
+		return Link{}, errors.New("Could not get clicks for link " + linkSlug + ": " + err.Error())
 	}
 	link := Link{
-		ID:     linkID,
-		Slug:   rawLink["slug"],
+		Slug:   linkSlug,
 		URL:    rawLink["url"],
 		Clicks: clicks,
 	}
@@ -217,51 +217,50 @@ func (db DB) GetLink(ctx context.Context, linkID string) (Link, error) {
 }
 
 func (db DB) SetLink(ctx context.Context, link Link) error {
-	err := db.basicDB.SetHash(ctx, link.ID, map[string]string{
-		"slug":   link.Slug,
+	err := db.basicDB.SetHash(ctx, link.Slug, map[string]string{
 		"url":    link.URL,
 		"clicks": strconv.Itoa(link.Clicks),
 	})
 	if err != nil {
-		return errors.New("Could not set link " + link.ID + ": " + err.Error())
+		return errors.New("Could not set link " + link.Slug + ": " + err.Error())
 	}
-	err = db.basicDB.AddToList(ctx, "links", link.ID)
+	err = db.basicDB.AddToList(ctx, "links", link.Slug)
 	if err != nil {
-		return errors.New("Could not add link " + link.ID + " to links list: " + err.Error())
+		return errors.New("Could not add link " + link.Slug + " to links list: " + err.Error())
 	}
 	return nil
 }
 
-func (db DB) DeleteLink(ctx context.Context, linkID string) error {
-	err := db.basicDB.DeleteHash(ctx, linkID)
+func (db DB) DeleteLink(ctx context.Context, linkSlug string) error {
+	err := db.basicDB.DeleteHash(ctx, linkSlug)
 	if err != nil {
-		return errors.New("Could not delete link " + linkID + ": " + err.Error())
+		return errors.New("Could not delete link " + linkSlug + ": " + err.Error())
 	}
-	err = db.basicDB.RemoveFromList(ctx, "links", linkID)
+	err = db.basicDB.RemoveFromList(ctx, "links", linkSlug)
 	if err != nil {
-		return errors.New("Could not remove link " + linkID + " from links list: " + err.Error())
+		return errors.New("Could not remove link " + linkSlug + " from links list: " + err.Error())
 	}
 	return nil
 }
 
-func (db DB) GetLinkIDs(ctx context.Context) ([]string, error) {
-	links, err := db.basicDB.GetList(ctx, "links")
+func (db DB) GetLinkSlugs(ctx context.Context) ([]string, error) {
+	slugs, err := db.basicDB.GetList(ctx, "links")
 	if err != nil {
-		return nil, errors.New("Could not get link IDs: " + err.Error())
+		return nil, errors.New("Could not get link slugs: " + err.Error())
 	}
-	return links, nil
+	return slugs, nil
 }
 
 func (db DB) GetLinks(ctx context.Context) ([]Link, error) {
-	linkIDs, err := db.GetLinkIDs(ctx)
+	linkSlugs, err := db.GetLinkSlugs(ctx)
 	if err != nil {
 		return nil, errors.New("Could not get links: " + err.Error())
 	}
-	links := make([]Link, len(linkIDs))
-	for i, linkID := range linkIDs {
-		link, err := db.GetLink(ctx, linkID)
+	links := make([]Link, len(linkSlugs))
+	for i, linkSlug := range linkSlugs {
+		link, err := db.GetLink(ctx, linkSlug)
 		if err != nil {
-			logging.PrintErrStr("Failed to get link " + linkID + ": " + err.Error())
+			logging.PrintErrStr("Failed to get link for " + linkSlug + ": " + err.Error())
 			continue
 		}
 		links[i] = link

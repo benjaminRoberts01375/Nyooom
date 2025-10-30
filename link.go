@@ -12,7 +12,6 @@ import (
 type Link struct {
 	Slug   string
 	URL    string
-	ID     string
 	Clicks int
 }
 
@@ -32,39 +31,38 @@ func newLink(slug string, url string) (Link, error) {
 	return Link{
 		Slug:   slug,
 		URL:    url,
-		ID:     generateRandomString(10),
 		Clicks: 0,
 	}, nil
 }
 
 func (link Link) String() string {
-	return link.ID + ": " + link.Slug + " -> " + link.URL + " has " + strconv.Itoa(link.Clicks) + " clicks"
+	return link.Slug + " -> " + link.URL + " has " + strconv.Itoa(link.Clicks) + " clicks"
 }
 
 func epCreateLink(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		link, err := newLink(r.URL.Query().Get("slug"), r.URL.Query().Get("url"))
 		if err != nil {
-			logging.PrintErrStr("Failed to create link \"" + link.ID + ".\" " + err.Error())
+			logging.PrintErrStr("Failed to create link \"" + link.Slug + ".\" " + err.Error())
 			// TODO: Handle error
 			return
 		}
 		db.SetLink(context.Background(), link)
 		// TODO: Handle success
-		logging.Println("Created link \"" + link.ID + "\"")
+		logging.Println("Created link \"" + link.Slug + "\"")
 	}
 }
 
 func epDeleteLink(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		linkID := r.URL.Query().Get("linkID")
-		err := db.DeleteLink(context.Background(), linkID)
+		linkSlug := r.URL.Query().Get("slug")
+		err := db.DeleteLink(context.Background(), linkSlug)
 		if err != nil {
-			logging.PrintErrStr("Failed to delete link \"" + linkID + ".\" " + err.Error())
+			logging.PrintErrStr("Failed to delete link \"" + linkSlug + ".\" " + err.Error())
 			// TODO: Handle error
 			return
 		}
-		logging.Println("Deleted link \"" + linkID + "\"")
+		logging.Println("Deleted link \"" + linkSlug + "\"")
 		// TODO: Handle success
 	}
 }
