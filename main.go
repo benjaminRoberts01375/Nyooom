@@ -6,8 +6,12 @@ import (
 )
 
 func main() {
+	// Setup
 	logging.ReadConfig()          // Setup printing colors
 	var db AdvancedDB = SetupDB() // Setup database
+	jwt := loadJWTSecret(db)      // Setup JWT
+
+	// Running
 	logging.Println("Hello, World")
 	setupEndpoints(db)
 	http.ListenAndServe(":8080", nil)

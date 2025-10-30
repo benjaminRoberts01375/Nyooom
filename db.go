@@ -38,6 +38,8 @@ type AdvancedDB interface {
 	DeleteLink(ctx context.Context, linkSlug string) error
 	GetLinkSlugs(ctx context.Context) ([]string, error)
 	GetLinks(ctx context.Context) ([]Link, error)
+	GetJWT(ctx context.Context) (string, error)
+	SetJWT(ctx context.Context, jwt string) error
 }
 
 type DB struct {
@@ -285,4 +287,12 @@ func (db DB) GetLinks(ctx context.Context) ([]Link, error) {
 		links[i] = link
 	}
 	return links, nil
+}
+
+func (db DB) GetJWT(ctx context.Context) (string, error) {
+	return db.basicDB.Get(ctx, "jwt")
+}
+
+func (db DB) SetJWT(ctx context.Context, jwt string) error {
+	return db.basicDB.Set(ctx, "jwt", jwt, 0)
 }
