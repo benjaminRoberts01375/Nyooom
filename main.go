@@ -9,7 +9,7 @@ func main() {
 	// Setup
 	logging.ReadConfig()          // Setup printing colors
 	var db AdvancedDB = SetupDB() // Setup database
-	jwt := loadJWTSecret(db)      // Setup JWT
+	_ = loadJWTSecret(db)         // Setup JWT
 
 	// Running
 	logging.Println("Hello, World")
