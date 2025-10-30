@@ -35,6 +35,7 @@ type AdvancedDB interface {
 	SetLink(ctx context.Context, link Link) error
 	GetLink(ctx context.Context, linkID string) (Link, error)
 	DeleteLink(ctx context.Context, linkID string) error
+	GetLinkIDs(ctx context.Context) ([]string, error)
 }
 
 type DB struct {
@@ -223,6 +224,10 @@ func (db DB) SetLink(ctx context.Context, link Link) error {
 	if err != nil {
 		return errors.New("Could not set link " + link.ID + ": " + err.Error())
 	}
+	err = db.basicDB.AddToList(ctx, "links", link.ID)
+	if err != nil {
+		return errors.New("Could not add link " + link.ID + " to links list: " + err.Error())
+	}
 	return nil
 }
 
@@ -231,5 +236,17 @@ func (db DB) DeleteLink(ctx context.Context, linkID string) error {
 	if err != nil {
 		return errors.New("Could not delete link " + linkID + ": " + err.Error())
 	}
+	err = db.basicDB.RemoveFromList(ctx, "links", linkID)
+	if err != nil {
+		return errors.New("Could not remove link " + linkID + " from links list: " + err.Error())
+	}
 	return nil
+}
+
+func (db DB) GetLinkIDs(ctx context.Context) ([]string, error) {
+	links, err := db.basicDB.GetList(ctx, "links")
+	if err != nil {
+		return nil, errors.New("Could not get link IDs: " + err.Error())
+	}
+	return links, nil
 }
