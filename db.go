@@ -36,6 +36,7 @@ type AdvancedDB interface {
 	GetLink(ctx context.Context, linkID string) (Link, error)
 	DeleteLink(ctx context.Context, linkID string) error
 	GetLinkIDs(ctx context.Context) ([]string, error)
+	GetLinks(ctx context.Context) ([]Link, error)
 }
 
 type DB struct {
@@ -247,6 +248,23 @@ func (db DB) GetLinkIDs(ctx context.Context) ([]string, error) {
 	links, err := db.basicDB.GetList(ctx, "links")
 	if err != nil {
 		return nil, errors.New("Could not get link IDs: " + err.Error())
+	}
+	return links, nil
+}
+
+func (db DB) GetLinks(ctx context.Context) ([]Link, error) {
+	linkIDs, err := db.GetLinkIDs(ctx)
+	if err != nil {
+		return nil, errors.New("Could not get links: " + err.Error())
+	}
+	links := make([]Link, len(linkIDs))
+	for i, linkID := range linkIDs {
+		link, err := db.GetLink(ctx, linkID)
+		if err != nil {
+			logging.PrintErrStr("Failed to get link " + linkID + ": " + err.Error())
+			continue
+		}
+		links[i] = link
 	}
 	return links, nil
 }
