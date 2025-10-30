@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 )
 
@@ -31,4 +32,8 @@ func newLink(slug string, url string) (Link, error) {
 		ID:     generateRandomString(10),
 		Clicks: 0,
 	}, nil
+}
+
+func (link Link) String() string {
+	return link.ID + ": " + link.Slug + " -> " + link.URL + " has " + strconv.Itoa(link.Clicks) + " clicks"
 }
