@@ -29,6 +29,9 @@ type ValkeyDB struct {
 type AdvancedDB interface {
 	GetVersion(ctx context.Context) (string, error)
 	SetVersion(ctx context.Context, version string) error
+	SetLink(ctx context.Context, link Link) error
+	GetLink(ctx context.Context, linkID string) (Link, error)
+	DeleteLink(ctx context.Context, linkID string) error
 }
 
 type DB struct {
@@ -162,6 +165,44 @@ func (db DB) SetVersion(ctx context.Context, version string) error {
 	err := db.basicDB.Set(ctx, "version", version, 0)
 	if err != nil {
 		return errors.New("Could not set db version: " + err.Error())
+	}
+	return nil
+}
+
+func (db DB) GetLink(ctx context.Context, linkID string) (Link, error) {
+	rawLink, err := db.basicDB.GetHash(ctx, linkID)
+	if err != nil {
+		return Link{}, errors.New("Could not get link " + linkID + ": " + err.Error())
+	}
+	clicks, err := strconv.Atoi(rawLink["clicks"])
+	if err != nil {
+		return Link{}, errors.New("Could not get clicks for link " + linkID + ": " + err.Error())
+	}
+	link := Link{
+		ID:     linkID,
+		Slug:   rawLink["slug"],
+		URL:    rawLink["url"],
+		Clicks: clicks,
+	}
+	return link, nil
+}
+
+func (db DB) SetLink(ctx context.Context, link Link) error {
+	err := db.basicDB.SetHash(ctx, link.ID, map[string]string{
+		"slug":   link.Slug,
+		"url":    link.URL,
+		"clicks": strconv.Itoa(link.Clicks),
+	})
+	if err != nil {
+		return errors.New("Could not set link " + link.ID + ": " + err.Error())
+	}
+	return nil
+}
+
+func (db DB) DeleteLink(ctx context.Context, linkID string) error {
+	err := db.basicDB.DeleteHash(ctx, linkID)
+	if err != nil {
+		return errors.New("Could not delete link " + linkID + ": " + err.Error())
 	}
 	return nil
 }
