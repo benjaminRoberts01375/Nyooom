@@ -65,18 +65,18 @@ func loadJWTSecret(db AdvancedDB) JWTService {
 	}
 
 	// Read the JWT secret from database
-	jwtSecret, err := db.GetJWT(context.Background())
+	jwtSecret, err := db.GetJWTSecret(context.Background())
 	if err == nil && jwtSecret != "" {
-		logging.Println("JWT provided in database")
+		logging.Println("JWT secret provided in database")
 		return NewJWTService(jwtSecret, time.Now)
 	}
 
 	// Generate a new JWT secret
-	logging.Println("Generating JWT and storing in database")
+	logging.Println("Generating JWT secret and storing in database")
 	newJWT := generateRandomString(15)
-	err = db.SetJWT(context.Background(), newJWT)
+	err = db.SetJWTSecret(context.Background(), newJWT)
 	if err != nil {
-		panic("Failed to save JWT to database: " + err.Error())
+		panic("Failed to save JWT secret to database: " + err.Error())
 	}
 	return NewJWTService(newJWT, time.Now)
 }

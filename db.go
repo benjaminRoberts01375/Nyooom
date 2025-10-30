@@ -39,8 +39,8 @@ type AdvancedDB interface {
 	DeleteLink(ctx context.Context, linkSlug string) error
 	GetLinkSlugs(ctx context.Context) ([]string, error)
 	GetLinks(ctx context.Context) ([]Link, error)
-	GetJWT(ctx context.Context) (string, error)
-	SetJWT(ctx context.Context, jwt string) error
+	GetJWTSecret(ctx context.Context) (string, error)
+	SetJWTSecret(ctx context.Context, jwt string) error
 	UserExists(ctx context.Context) (bool, error)
 	SetUser(ctx context.Context, passwordHash []byte) error
 	GetUser(ctx context.Context) (string, error)
@@ -302,7 +302,7 @@ func (db DB) GetLinks(ctx context.Context) ([]Link, error) {
 	return links, nil
 }
 
-func (db DB) GetJWT(ctx context.Context) (string, error) {
+func (db DB) GetJWTSecret(ctx context.Context) (string, error) {
 	jwt, err := db.basicDB.Get(ctx, "jwt")
 	if err != nil {
 		return "", errors.New("Could not get jwt: " + err.Error())
@@ -310,7 +310,7 @@ func (db DB) GetJWT(ctx context.Context) (string, error) {
 	return jwt, nil
 }
 
-func (db DB) SetJWT(ctx context.Context, jwt string) error {
+func (db DB) SetJWTSecret(ctx context.Context, jwt string) error {
 	err := db.basicDB.Set(ctx, "jwt", jwt, 0)
 	if err != nil {
 		return errors.New("Could not set jwt: " + err.Error())
