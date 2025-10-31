@@ -29,4 +29,5 @@ func setupEndpoints(db AdvancedDB, jwt JWTService) {
 	http.HandleFunc("/{id}", epRedirect(db))
 
 	// UI endpoints
+	http.HandleFunc("/", epBase(db, jwt))
 }

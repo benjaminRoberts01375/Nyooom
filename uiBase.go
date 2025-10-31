@@ -1,0 +1,31 @@
+package main
+
+import "net/http"
+
+func epBase(db AdvancedDB, jwt JWTService) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Check if a user exists in the database
+		userExists, err := db.UserExists(r.Context())
+		if err != nil {
+			http.Error(w, "Failed to check if user exists: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if !userExists {
+			http.Redirect(w, r, "/create-user", http.StatusFound)
+			return
+		}
+		// Check if the user is authenticated
+		cookie, err := r.Cookie(CookieName)
+		if err != nil || cookie.Value == "" { // No or bad cookie
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+		_, ok := jwt.ValidateJWT(cookie.Value)
+		if !ok { // Invalid JWT
+			http.Redirect(w, r, "/login", http.StatusFound)
+			return
+		}
+		// All is good, send to the dashboard
+		http.Redirect(w, r, "/dashboard", http.StatusAccepted)
+	}
+}
