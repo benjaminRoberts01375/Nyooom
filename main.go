@@ -29,5 +29,9 @@ func setupEndpoints(db AdvancedDB, jwt JWTService) {
 	http.HandleFunc("/{id}", epRedirect(db))
 
 	// UI endpoints
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	http.HandleFunc("/", epBase(db, jwt))
+	http.HandleFunc("/create-account", epCreateUserPage(db))
+	http.HandleFunc("/login", epLoginPage(db, jwt))
+	http.HandleFunc("/dashboard", epDashboardPage(db, jwt))
 }

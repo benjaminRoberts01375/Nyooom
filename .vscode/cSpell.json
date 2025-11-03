@@ -32,7 +32,9 @@
 		"Lpush",
 		"Lrem",
 		"Lrange",
-		"Hincrby"
+		"Hincrby",
+		"htmx",
+		"tmpl"
 	],
 	"flagWords": ["hte", "nyoom", "yoom", "yooom"]
 }

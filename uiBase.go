@@ -11,7 +11,7 @@ func epBase(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 			return
 		}
 		if !userExists {
-			http.Redirect(w, r, "/create-user", http.StatusFound)
+			http.Redirect(w, r, "/create-account", http.StatusFound)
 			return
 		}
 		// Check if the user is authenticated
