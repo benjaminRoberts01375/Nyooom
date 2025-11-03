@@ -44,7 +44,7 @@ type AdvancedDB interface {
 	UserExists(ctx context.Context) (bool, error)
 	SetUser(ctx context.Context, passwordHash []byte) error
 	GetUser(ctx context.Context) (string, error)
-	LinkAnalytics(ctx context.Context, linkSlug string, amount int) error
+	LinkAnalytics(ctx context.Context, linkSlug string, amount int, clickTime time.Time) error
 }
 
 type DB struct {
@@ -234,10 +234,21 @@ func (db DB) GetLink(ctx context.Context, linkSlug string) (Link, error) {
 	if err != nil {
 		return Link{}, errors.New("Could not get clicks for link " + linkSlug + ": " + err.Error())
 	}
+
+	var lastClick *time.Time
+	if lastClickStr, exists := rawLink["last_click"]; exists && lastClickStr != "" {
+		parsed, err := time.Parse(time.RFC3339, lastClickStr)
+		if err != nil {
+			return Link{}, errors.New("Could not parse last_click for link " + linkSlug + ": " + err.Error())
+		}
+		lastClick = &parsed
+	}
+
 	link := Link{
-		Slug:   linkSlug,
-		URL:    rawLink["url"],
-		Clicks: clicks,
+		Slug:      linkSlug,
+		URL:       rawLink["url"],
+		Clicks:    clicks,
+		LastClick: lastClick,
 	}
 	return link, nil
 }
@@ -344,10 +355,19 @@ func (db DB) GetUser(ctx context.Context) (string, error) {
 	return user, nil
 }
 
-func (db DB) LinkAnalytics(ctx context.Context, linkSlug string, amount int) error {
+func (db DB) LinkAnalytics(ctx context.Context, linkSlug string, amount int, clickTime time.Time) error {
 	err := db.basicDB.IncrementHashField(ctx, linkSlug, "clicks", amount)
 	if err != nil {
 		return errors.New("Could not increment clicks for link " + linkSlug + ": " + err.Error())
 	}
+
+	// Update last click timestamp
+	err = db.basicDB.SetHash(ctx, linkSlug, map[string]string{
+		"last_click": clickTime.Format(time.RFC3339),
+	})
+	if err != nil {
+		return errors.New("Could not update last_click for link " + linkSlug + ": " + err.Error())
+	}
+
 	return nil
 }
