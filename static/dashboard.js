@@ -1,5 +1,5 @@
 // Handle copy to clipboard functionality
-function copyToClipboard(slug) {
+function copyToClipboard(event, slug) {
 	const url = window.location.origin + '/' + slug;
 	navigator.clipboard.writeText(url).then(() => {
 		const button = event.target;

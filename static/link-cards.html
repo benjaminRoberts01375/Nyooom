@@ -20,7 +20,7 @@
 			{{.Clicks}} {{if eq .Clicks 1}}click{{else}}clicks{{end}}
 		</div>
 		<div class="link-actions">
-			<button class="copy-button" onclick="copyToClipboard('{{.Slug}}')">Copy Link</button>
+			<button class="copy-button" onclick="copyToClipboard(event, '{{.Slug}}')">Copy Link</button>
 			<button class="btn btn-danger" onclick="deleteLink('{{.Slug}}')">Delete</button>
 		</div>
 	</div>
