@@ -1,0 +1,130 @@
+:root {
+	--color-submit: #3b82f6;
+	--color-success: #16a34a;
+	--color-error: #dc2626;
+	--label: #fffd;
+	--sub-label: #fffa;
+}
+
+.auth-container {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20pt;
+}
+
+.auth-card {
+	background-color: #1e293b;
+	border-radius: 12pt;
+	padding: 40pt;
+	width: 100%;
+	max-width: 400pt;
+	transition-duration: 1s;
+}
+
+.auth-card:hover {
+	box-shadow: 0 0 30pt rgba(0, 0, 0, 0.3);
+}
+
+.auth-header {
+	text-align: center;
+	margin-bottom: 32pt;
+}
+
+.auth-header h1 {
+	font-size: 28pt;
+	font-weight: 600;
+	color: var(--label);
+	margin-bottom: 8pt;
+}
+
+.auth-header p {
+	font-size: 14pt;
+	color: var(--sub-label);
+}
+
+.auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: 8pt;
+}
+
+.auth-form > label,
+.auth-form > input,
+.auth-form > .password-requirements {
+	display: block;
+}
+
+.auth-form label {
+	font-size: 14pt;
+	font-weight: 500;
+	color: var(--label);
+	margin-bottom: 8pt;
+}
+
+.auth-button {
+	margin-top: 8pt;
+	width: 100%;
+	padding: 12pt 24pt;
+	font-size: 16pt;
+	border: solid var(--color-submit);
+	background: color-mix(in srgb, var(--color-submit) 13%, transparent);
+	color: var(--label);
+	border-radius: 6pt;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.1s;
+	font-weight: 500;
+}
+
+.auth-button:hover {
+	background: var(--color-submit);
+}
+
+.password-requirements {
+	font-size: 12pt;
+	color: var(--sub-label);
+	margin-top: 4pt;
+}
+
+.htmx-indicator {
+	display: none;
+}
+
+.htmx-request .htmx-indicator {
+	display: inline;
+	margin-left: 8pt;
+}
+
+.htmx-request.htmx-indicator {
+	display: inline;
+}
+
+.loading-spinner {
+	display: inline-block;
+	width: 16pt;
+	height: 16pt;
+	border: 2pt solid rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	border-top-color: var(--label);
+	animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+	width: 100%;
+	padding: 12pt;
+	font-size: 12pt;
+	border: 1pt solid #334155;
+	border-radius: 6pt;
+	background-color: #1e293b;
+	color: var(--label);
+	transition: border-color 0.2s;
+}
