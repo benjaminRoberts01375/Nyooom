@@ -8,7 +8,7 @@ import (
 
 func generateRandomString(length int) string {
 	// Charset is URL safe and easy to read
-	const charset = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ123456789"
+	const charset = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
 
 	stringBase := make([]byte, length)
 	for i := range stringBase {
