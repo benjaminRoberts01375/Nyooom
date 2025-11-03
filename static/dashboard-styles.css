@@ -124,6 +124,8 @@
 	border-radius: 10px;
 	transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 	position: relative;
+	display: flex;
+	flex-direction: column;
 }
 
 .link-card:hover {
@@ -157,7 +159,8 @@
 	font-weight: 600;
 	color: var(--label);
 	font-size: 0.9rem;
-	margin-bottom: 1rem;
+	margin: auto 0px 0px auto;
+	width: 50%;
 }
 
 .link-clicks svg {
