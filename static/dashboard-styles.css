@@ -16,11 +16,6 @@
 	font-weight: 600;
 }
 
-.dashboard-header p {
-	color: var(--sub-label);
-	font-size: 1.1rem;
-}
-
 /* Create Link Section */
 .create-link-section {
 	background: var(--primary-background);
