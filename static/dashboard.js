@@ -1,41 +1,78 @@
-// Handle copy to clipboard functionality
-function copyToClipboard(event, slug) {
-	const url = window.location.origin + '/' + slug;
-	navigator.clipboard.writeText(url).then(() => {
-		const button = event.target;
-		const originalText = button.textContent;
-		button.textContent = 'Copied!';
-		button.classList.add('copied');
-
-		setTimeout(() => {
-			button.textContent = originalText;
-			button.classList.remove('copied');
-		}, 2000);
-	}).catch(err => {
-		console.error('Failed to copy:', err);
-		alert('Failed to copy to clipboard');
+// Format timestamp to user's local timezone
+function formatTimestamps() {
+	const timestampElements = document.querySelectorAll(".link-last-click");
+	timestampElements.forEach(element => {
+		const timestamp = element.getAttribute("data-timestamp");
+		if (timestamp) {
+			const date = new Date(timestamp);
+			const formatted = new Intl.DateTimeFormat("default", {
+				year: "numeric",
+				month: "short",
+				day: "numeric",
+			}).format(date);
+			const fullFormatted = new Intl.DateTimeFormat("default", {
+				year: "numeric",
+				month: "short",
+				day: "numeric",
+				hour: "numeric",
+				minute: "2-digit",
+				second: "2-digit",
+			}).format(date);
+			const displaySpan = element.querySelector(".timestamp-display");
+			if (displaySpan) {
+				displaySpan.textContent = formatted;
+				displaySpan.title = fullFormatted;
+			}
+		}
 	});
 }
 
+// Handle copy to clipboard functionality
+function copyToClipboard(event, slug) {
+	const url = window.location.origin + "/" + slug;
+	navigator.clipboard
+		.writeText(url)
+		.then(() => {
+			const button = event.target;
+			const originalText = button.textContent;
+			button.textContent = "Copied!";
+			button.classList.add("copied");
+
+			setTimeout(() => {
+				button.textContent = originalText;
+				button.classList.remove("copied");
+			}, 2000);
+		})
+		.catch(err => {
+			console.error("Failed to copy:", err);
+			alert("Failed to copy to clipboard");
+		});
+}
+
 // Handle form submission responses
-document.body.addEventListener('htmx:afterRequest', function(event) {
+document.body.addEventListener("htmx:afterRequest", function (event) {
 	const target = event.detail.target;
 
-	if (event.detail.elt.classList.contains('create-link-form')) {
-		const responseDiv = document.getElementById('create-response');
+	if (event.detail.elt.classList.contains("create-link-form")) {
+		const responseDiv = document.getElementById("create-response");
 
 		if (event.detail.successful) {
-			responseDiv.className = 'response-message success';
-			responseDiv.textContent = 'Link created successfully!';
+			responseDiv.className = "response-message success";
+			responseDiv.textContent = "Link created successfully!";
 		} else {
-			responseDiv.className = 'response-message error';
-			responseDiv.textContent = 'Failed to create link. Please check your inputs and try again.';
+			responseDiv.className = "response-message error";
+			responseDiv.textContent = "Failed to create link. Please check your inputs and try again.";
 		}
 
 		// Hide message after 5 seconds
 		setTimeout(() => {
-			responseDiv.style.display = 'none';
+			responseDiv.style.display = "none";
 		}, 5000);
+	}
+
+	// Format timestamps after links are loaded/refreshed
+	if (target.id === "links-container") {
+		formatTimestamps();
 	}
 });
 
@@ -46,18 +83,18 @@ function deleteLink(slug) {
 	}
 
 	fetch(`/api/delete-link?slug=${encodeURIComponent(slug)}`, {
-		method: 'POST'
+		method: "POST",
 	})
-	.then(response => {
-		if (response.ok) {
-			// Trigger refresh of links list
-			htmx.trigger('#links-container', 'refreshLinks');
-		} else {
-			alert('Failed to delete link');
-		}
-	})
-	.catch(err => {
-		console.error('Error deleting link:', err);
-		alert('Failed to delete link');
-	});
+		.then(response => {
+			if (response.ok) {
+				// Trigger refresh of links list
+				htmx.trigger("#links-container", "refreshLinks");
+			} else {
+				alert("Failed to delete link");
+			}
+		})
+		.catch(err => {
+			console.error("Error deleting link:", err);
+			alert("Failed to delete link");
+		});
 }

@@ -172,6 +172,17 @@
 	color: var(--color-submit);
 }
 
+.link-stats {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+	margin-top: auto;
+}
+
+.link-last-click {
+	margin: 0;
+}
+
 .link-actions {
 	display: flex;
 	gap: 0.5rem;
