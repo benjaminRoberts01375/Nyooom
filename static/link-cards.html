@@ -1,0 +1,28 @@
+{{if .}}
+<div class="links-grid">
+	{{range .}}
+	<div class="link-card">
+		<div class="link-slug">{{.Slug}}</div>
+		<div class="link-url">{{.URL}}</div>
+		<div class="link-clicks">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+				<path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+				<path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+			</svg>
+			{{.Clicks}} clicks
+		</div>
+		<div class="link-actions">
+			<button class="copy-button" onclick="copyToClipboard('{{.Slug}}')">Copy Link</button>
+			<button class="btn btn-danger" onclick="deleteLink('{{.Slug}}')">Delete</button>
+		</div>
+	</div>
+	{{end}}
+</div>
+{{else}}
+<div class="empty-state">
+	<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+		<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+	</svg>
+	<p>No links yet. Create your first one above!</p>
+</div>
+{{end}}

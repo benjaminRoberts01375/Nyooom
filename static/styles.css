@@ -4,6 +4,7 @@
 	--color-error: #dc2626;
 	--label: #fffd;
 	--sub-label: #fffa;
+	--primary-background: #1e293b;
 }
 
 * {
@@ -51,4 +52,79 @@ body {
 	border-radius: 6pt;
 	margin-bottom: 16pt;
 	border-left: 4pt solid var(--color-submit);
+}
+
+.response-message {
+	margin-top: 1rem;
+	padding: 12pt;
+	border-radius: 6px;
+	display: none;
+}
+
+.response-message.success {
+	display: block;
+	background-color: #14532d;
+	color: #bbf7d0;
+	border-left: 4pt solid var(--color-success);
+}
+
+.response-message.error {
+	display: block;
+	background-color: #7f1d1d;
+	color: #fecaca;
+	border-left: 4pt solid var(--color-error);
+}
+
+/* HTMX indicator styles */
+.htmx-indicator {
+	display: none;
+}
+
+.htmx-request .htmx-indicator {
+	display: inline-block;
+	margin-left: 8pt;
+}
+
+.htmx-request.htmx-indicator {
+	display: inline;
+}
+
+.htmx-request.btn {
+	opacity: 0.7;
+}
+
+/* Loading spinner */
+.loading-spinner {
+	display: inline-block;
+	width: 16pt;
+	height: 16pt;
+	border: 2pt solid rgba(255, 255, 255, 0.3);
+	border-radius: 50%;
+	border-top-color: var(--label);
+	animation: spinner 0.6s linear infinite;
+}
+
+@keyframes spinner {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+/* Base input styles */
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+	width: 100%;
+	padding: 12pt;
+	font-size: 12pt;
+	border: 1pt solid #334155;
+	border-radius: 6pt;
+	background-color: #1e293b;
+	color: var(--label);
+	transition: border-color 0.2s;
+}
+
+input:focus {
+	outline: none;
+	border-color: var(--color-submit);
 }

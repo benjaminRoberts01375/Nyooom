@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dashboard - Nyooom</title>
+		<link rel="stylesheet" href="/static/styles.css" />
+		<link rel="stylesheet" href="/static/dashboard-styles.css" />
+		<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+	</head>
+	<body>
+		<div class="dashboard-container">
+			<div class="dashboard-header">
+				<h1>Nyooom Dashboard</h1>
+				<p>Create and manage your short links</p>
+			</div>
+
+			<!-- Create Link Section -->
+			<div class="create-link-section">
+				<h2>Create New Link</h2>
+				<div id="create-response" class="response-message"></div>
+				<form
+					class="create-link-form"
+					hx-post="/api/create-link"
+					hx-target="#links-container"
+					hx-swap="innerHTML"
+					hx-indicator="#create-button"
+				>
+					<div class="form-group">
+						<label for="slug">Slug</label>
+						<input
+							type="text"
+							id="slug"
+							name="slug"
+							required
+							minlength="3"
+							placeholder="e.g., my-link"
+							pattern="[^\s]+"
+							title="Slug cannot contain spaces"
+						/>
+					</div>
+					<div class="form-group">
+						<label for="url">URL</label>
+						<input
+							type="text"
+							id="url"
+							name="url"
+							required
+							minlength="5"
+							placeholder="e.g., example.com or https://example.com"
+							pattern="[^\s]+"
+							title="URL cannot contain spaces"
+						/>
+					</div>
+					<button type="submit" id="create-button" class="btn btn-primary">
+						Create Link
+						<span class="htmx-indicator">
+							<span class="loading-spinner"></span>
+						</span>
+					</button>
+				</form>
+			</div>
+
+			<!-- Links Section -->
+			<div class="links-section">
+				<h2>Your Links</h2>
+				<div
+					id="links-container"
+					hx-get="/api/get-links"
+					hx-trigger="load, refreshLinks from:body"
+					hx-swap="innerHTML"
+				>
+					<div class="loading">Loading links...</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="/static/dashboard.js"></script>
+	</body>
+</html>
