@@ -1,13 +1,15 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+)
 
 func epBase(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Check if a user exists in the database
 		userExists, err := db.UserExists(r.Context())
 		if err != nil {
-			http.Error(w, "Failed to check if user exists: "+err.Error(), http.StatusInternalServerError)
+			httpError(w, "Failed to check if user exists: ", http.StatusInternalServerError, err)
 			return
 		}
 		if !userExists {
