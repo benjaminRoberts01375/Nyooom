@@ -1,7 +1,7 @@
 # Nyooom
 
+![Nyooom](https://github.com/user-attachments/assets/09f8fa62-d9b7-4c2b-8817-83e5a47a7556)
 A fast and lightweight URL shortener service built with Go, featuring user authentication, link analytics, and a clean web dashboard.
-**TODO: ADD GIF**
 
 ## Features
 
