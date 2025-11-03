@@ -44,7 +44,7 @@ type AdvancedDB interface {
 	UserExists(ctx context.Context) (bool, error)
 	SetUser(ctx context.Context, passwordHash []byte) error
 	GetUser(ctx context.Context) (string, error)
-	IncrementLinkClicks(ctx context.Context, linkSlug string, amount int) error
+	LinkAnalytics(ctx context.Context, linkSlug string, amount int) error
 }
 
 type DB struct {
@@ -344,7 +344,7 @@ func (db DB) GetUser(ctx context.Context) (string, error) {
 	return user, nil
 }
 
-func (db DB) IncrementLinkClicks(ctx context.Context, linkSlug string, amount int) error {
+func (db DB) LinkAnalytics(ctx context.Context, linkSlug string, amount int) error {
 	err := db.basicDB.IncrementHashField(ctx, linkSlug, "clicks", amount)
 	if err != nil {
 		return errors.New("Could not increment clicks for link " + linkSlug + ": " + err.Error())
