@@ -18,6 +18,7 @@ func main() {
 }
 
 func setupEndpoints(db AdvancedDB, jwt JWTService) {
+	// Functional endpoints
 	http.HandleFunc("/api/create-link", epCreateLink(db))
 	http.HandleFunc("/api/delete-link", epDeleteLink(db))
 	http.HandleFunc("/api/get-links", epGetLinks(db))
@@ -25,5 +26,12 @@ func setupEndpoints(db AdvancedDB, jwt JWTService) {
 	http.HandleFunc("/api/login", epLogin(db, jwt))
 	http.HandleFunc("/api/jwt-login", epJWTLogin(jwt))
 	http.HandleFunc("/api/create-user", epCreateUser(db))
-	http.HandleFunc("/", epRedirect(db))
+	http.HandleFunc("/{id}", epRedirect(db))
+
+	// UI endpoints
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+	http.HandleFunc("/", epBase(db, jwt))
+	http.HandleFunc("/create-account", epCreateUserPage(db))
+	http.HandleFunc("/login", epLoginPage(db, jwt))
+	http.HandleFunc("/dashboard", epDashboardPage(db, jwt))
 }

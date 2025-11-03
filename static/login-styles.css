@@ -1,0 +1,79 @@
+.auth-container {
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20pt;
+}
+
+.auth-card {
+	border-radius: 12pt;
+	padding: 40pt;
+	width: 100%;
+	max-width: 400pt;
+	transition-duration: 1s;
+}
+
+.auth-card:hover {
+	box-shadow: 0 0 30pt rgba(0, 0, 0, 0.3);
+}
+
+.auth-header {
+	text-align: center;
+	margin-bottom: 32pt;
+}
+
+.auth-header h1 {
+	font-size: 28pt;
+	font-weight: 600;
+	color: var(--label);
+	margin-bottom: 8pt;
+}
+
+.auth-header p {
+	font-size: 14pt;
+	color: var(--sub-label);
+}
+
+.auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: 8pt;
+}
+
+.auth-form > label,
+.auth-form > input,
+.auth-form > .password-requirements {
+	display: block;
+}
+
+.auth-form label {
+	font-size: 14pt;
+	font-weight: 500;
+	color: var(--label);
+	margin-bottom: 8pt;
+}
+
+.auth-button {
+	margin-top: 8pt;
+	width: 100%;
+	padding: 12pt 24pt;
+	font-size: 16pt;
+	border: solid var(--color-submit);
+	background: color-mix(in srgb, var(--color-submit) 13%, transparent);
+	color: var(--label);
+	border-radius: 6pt;
+	cursor: pointer;
+	transition: background-color 0.2s, transform 0.1s;
+	font-weight: 500;
+}
+
+.auth-button:hover {
+	background: var(--color-submit);
+}
+
+.password-requirements {
+	font-size: 12pt;
+	color: var(--sub-label);
+	margin-top: 4pt;
+}

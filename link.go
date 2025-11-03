@@ -2,11 +2,22 @@ package main
 
 import (
 	"errors"
+	"html/template"
 	"net/http"
 	"nyooom/logging"
 	"strconv"
 	"strings"
 )
+
+// Helper function to render link cards template
+func renderLinkCards(w http.ResponseWriter, links []Link) error {
+	tmpl, err := template.ParseFiles("static/link-cards.html")
+	if err != nil {
+		return err
+	}
+	w.Header().Set("Content-Type", "text/html")
+	return tmpl.Execute(w, links)
+}
 
 type Link struct {
 	Slug   string
@@ -15,6 +26,8 @@ type Link struct {
 }
 
 func newLink(slug string, url string) (Link, error) {
+	logging.Println("Slug: ", slug)
+	logging.Println("URL:  ", url)
 	url, _ = strings.CutPrefix(url, "https://")
 	url, _ = strings.CutPrefix(url, "http://")
 
@@ -40,20 +53,30 @@ func (link Link) String() string {
 
 func epCreateLink(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		link, err := newLink(r.URL.Query().Get("slug"), r.URL.Query().Get("url"))
+		link, err := newLink(r.FormValue("slug"), r.FormValue("url"))
 		if err != nil {
-			logging.PrintErrStr("Failed to create link \"" + link.Slug + ".\" " + err.Error())
-			// TODO: Handle error
+			httpError(w, "Failed to create link \""+link.Slug+".\"", http.StatusBadRequest, err)
 			return
 		}
 		err = db.SetLink(r.Context(), link)
 		if err != nil {
-			logging.PrintErrStr("Failed to create link \"" + link.Slug + ".\" in database: " + err.Error())
-			// TODO: Handle error
+			httpError(w, "Failed to create link \""+link.Slug+".\" in database", http.StatusInternalServerError, err)
 			return
 		}
-		// TODO: Handle success
 		logging.Println("Created link \"" + link.Slug + "\"")
+
+		// Return the updated links list for HTMX
+		links, err := db.GetLinks(r.Context())
+		if err != nil {
+			httpError(w, "Failed to get links", http.StatusInternalServerError, err)
+			return
+		}
+
+		// Render links using template
+		err = renderLinkCards(w, links)
+		if err != nil {
+			httpError(w, "Failed to render links", http.StatusInternalServerError, err)
+		}
 	}
 }
 
@@ -62,12 +85,12 @@ func epDeleteLink(db AdvancedDB) http.HandlerFunc {
 		linkSlug := r.URL.Query().Get("slug")
 		err := db.DeleteLink(r.Context(), linkSlug)
 		if err != nil {
-			logging.PrintErrStr("Failed to delete link \"" + linkSlug + ".\" " + err.Error())
-			// TODO: Handle error
+			httpError(w, "Failed to delete link \""+linkSlug+".\" ", http.StatusInternalServerError, err)
 			return
 		}
 		logging.Println("Deleted link \"" + linkSlug + "\"")
-		// TODO: Handle success
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("Link deleted successfully"))
 	}
 }
 
@@ -75,13 +98,14 @@ func epGetLinks(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		links, err := db.GetLinks(r.Context())
 		if err != nil {
-			logging.PrintErrStr("Failed to get links: " + err.Error())
-			// TODO: Handle error
+			httpError(w, "Failed to get links", http.StatusInternalServerError, err)
 			return
 		}
-		// TODO Handle success
-		for _, link := range links {
-			logging.Println(link)
+
+		// Render links using template
+		err = renderLinkCards(w, links)
+		if err != nil {
+			httpError(w, "Failed to render links", http.StatusInternalServerError, err)
 		}
 	}
 }

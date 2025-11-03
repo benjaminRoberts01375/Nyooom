@@ -18,8 +18,7 @@
 		"nosniff",
 		"SAMEORIGIN",
 		"fsnotify",
-		"abcdefghijkmnopqrstuvwxyz",
-		"ABCDEFGHJKLMNPQRSTUVWXYZ",
+		"abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789",
 		"appuser",
 		"requirepass",
 		"homelab",
@@ -32,7 +31,9 @@
 		"Lpush",
 		"Lrem",
 		"Lrange",
-		"Hincrby"
+		"Hincrby",
+		"htmx",
+		"tmpl"
 	],
 	"flagWords": ["hte", "nyoom", "yoom", "yooom"]
 }

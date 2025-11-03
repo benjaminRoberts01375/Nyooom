@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Login - Nyooom</title>
+		<link rel="stylesheet" href="/static/styles.css" />
+		<link rel="stylesheet" href="/static/login-styles.css" />
+		<script src="https://unpkg.com/htmx.org@1.9.10"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="auth-card">
+				<div class="auth-header">
+					<h1>Login</h1>
+					<p>Enter your password to continue</p>
+				</div>
+
+				<div id="response-message"></div>
+
+				<form
+					class="auth-form"
+					hx-post="/api/login"
+					hx-target="#response-message"
+					hx-indicator="#submit-button"
+					hx-swap="innerHTML"
+				>
+					<label for="password">Password</label>
+					<input
+						type="password"
+						id="password"
+						name="password"
+						required
+						minlength="8"
+						placeholder="Enter your password"
+					/>
+
+					<button type="submit" id="submit-button" class="auth-button">
+						Login (Uses Cookies)
+						<span class="htmx-indicator">
+							<span class="loading-spinner"></span>
+						</span>
+					</button>
+				</form>
+			</div>
+		</div>
+
+		<script src="/static/auth-handlers.js"></script>
+	</body>
+</html>
