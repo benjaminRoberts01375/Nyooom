@@ -6,9 +6,9 @@ import (
 	"nyooom/logging"
 )
 
-func epLoginPage(db AdvancedDB) http.HandlerFunc {
+func epLoginPage(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Check if a user exists in the database
+		// Check if a user exists in the database - should take precedence over JWT
 		userExists, err := db.UserExists(r.Context())
 		if err != nil {
 			http.Error(w, "Failed to check if user exists: "+err.Error(), http.StatusInternalServerError)
@@ -18,6 +18,16 @@ func epLoginPage(db AdvancedDB) http.HandlerFunc {
 			logging.Println("User does not exist")
 			http.Redirect(w, r, "/create-account", http.StatusFound)
 			return
+		}
+		// Check if the user already has a valid JWT
+		cookie, err := r.Cookie(CookieName)
+		if err == nil && cookie.Value != "" {
+			_, ok := jwt.ValidateJWT(cookie.Value)
+			if ok {
+				// User is already authenticated, redirect to dashboard
+				http.Redirect(w, r, "/dashboard", http.StatusFound)
+				return
+			}
 		}
 		// User exists, setup account
 		logging.Println("Serving user login HTML")
