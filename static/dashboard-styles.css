@@ -160,7 +160,7 @@
 	color: var(--label);
 	font-size: 0.9rem;
 	margin: auto 0px 0px auto;
-	width: 50%;
+	width: fit-content;
 }
 
 .link-clicks svg {
