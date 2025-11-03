@@ -42,14 +42,12 @@ func epCreateLink(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		link, err := newLink(r.URL.Query().Get("slug"), r.URL.Query().Get("url"))
 		if err != nil {
-			logging.PrintErrStr("Failed to create link \"" + link.Slug + ".\" " + err.Error())
-			// TODO: Handle error
+			httpError(w, "Failed to create link \""+link.Slug+".\"", http.StatusInternalServerError, err)
 			return
 		}
 		err = db.SetLink(r.Context(), link)
 		if err != nil {
-			logging.PrintErrStr("Failed to create link \"" + link.Slug + ".\" in database: " + err.Error())
-			// TODO: Handle error
+			httpError(w, "Failed to create link \""+link.Slug+".\" in database", http.StatusInternalServerError, err)
 			return
 		}
 		// TODO: Handle success
@@ -62,8 +60,7 @@ func epDeleteLink(db AdvancedDB) http.HandlerFunc {
 		linkSlug := r.URL.Query().Get("slug")
 		err := db.DeleteLink(r.Context(), linkSlug)
 		if err != nil {
-			logging.PrintErrStr("Failed to delete link \"" + linkSlug + ".\" " + err.Error())
-			// TODO: Handle error
+			httpError(w, "Failed to delete link \""+linkSlug+".\" ", http.StatusInternalServerError, err)
 			return
 		}
 		logging.Println("Deleted link \"" + linkSlug + "\"")
@@ -75,8 +72,7 @@ func epGetLinks(db AdvancedDB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		links, err := db.GetLinks(r.Context())
 		if err != nil {
-			logging.PrintErrStr("Failed to get links: " + err.Error())
-			// TODO: Handle error
+			httpError(w, "Failed to get links", http.StatusInternalServerError, err)
 			return
 		}
 		// TODO Handle success
