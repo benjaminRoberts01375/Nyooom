@@ -113,7 +113,7 @@
 
 .links-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+	grid-template-columns: repeat(auto-fill, 275pt);
 	gap: 1rem;
 }
 
@@ -164,7 +164,6 @@
 	font-weight: 600;
 	color: var(--label);
 	font-size: 0.9rem;
-	margin: auto 0px 0px auto;
 	width: fit-content;
 }
 
@@ -175,12 +174,15 @@
 .link-stats {
 	display: flex;
 	gap: 0.5rem;
-	flex-wrap: wrap;
+	flex-wrap: nowrap;
 	margin-top: auto;
 }
 
 .link-last-click {
-	margin: 0;
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .link-actions {
