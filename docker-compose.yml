@@ -1,0 +1,43 @@
+networks:
+  network:
+    driver: bridge
+
+services:
+  nyooom-valkey:
+    image: valkey/valkey:9.0-alpine
+    container_name: nyooom-valkey
+    restart: unless-stopped
+    networks:
+      - network
+    ports:
+      - "${DB_PORT}:6379"
+    volumes:
+      - nyooom-valkey-data:/data
+    command: valkey-server --requirepass ${DB_PASSWORD}
+
+  nyooom-backend:
+    build:
+      dockerfile: Dockerfile
+    container_name: nyooom-backend
+    restart: unless-stopped
+    networks:
+      - network
+    hostname: nyooom-backend
+    environment:
+      - ROLE=Backend
+      - COLOR=blue
+      - PORT=8080
+    env_file:
+      - .env
+    ports:
+      - "${WEB_UI_PORT}:8080"
+    volumes:
+      - nyooom-backend-data:/home/appuser/Nyooom
+    depends_on:
+      - nyooom-valkey
+
+volumes:
+  nyooom-valkey-data:
+    name: nyooom-valkey-data
+  nyooom-backend-data:
+    name: nyooom-backend-data
