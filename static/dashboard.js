@@ -30,23 +30,58 @@ function formatTimestamps() {
 // Handle copy to clipboard functionality
 function copyToClipboard(event, slug) {
 	const url = window.location.origin + "/" + slug;
-	navigator.clipboard
-		.writeText(url)
-		.then(() => {
-			const button = event.target;
-			const originalText = button.textContent;
-			button.textContent = "Copied!";
-			button.classList.add("copied");
+	const button = event.target;
+	const originalText = button.textContent;
 
-			setTimeout(() => {
-				button.textContent = originalText;
-				button.classList.remove("copied");
-			}, 2000);
-		})
-		.catch(err => {
-			console.error("Failed to copy:", err);
-			alert("Failed to copy to clipboard");
-		});
+	// Function to show success feedback
+	const showSuccess = () => {
+		button.textContent = "Copied!";
+		button.classList.add("copied");
+
+		setTimeout(() => {
+			button.textContent = originalText;
+			button.classList.remove("copied");
+		}, 2000);
+	};
+
+	// Try modern clipboard API first
+	if (navigator.clipboard && navigator.clipboard.writeText) {
+		navigator.clipboard
+			.writeText(url)
+			.then(showSuccess)
+			.catch(err => {
+				console.error("Failed to copy:", err);
+				fallbackCopy(url, showSuccess);
+			});
+	} else {
+		// Fallback for browsers without clipboard API (e.g., non-HTTPS contexts)
+		fallbackCopy(url, showSuccess);
+	}
+}
+
+// Fallback copy method using temporary textarea
+function fallbackCopy(text, onSuccess) {
+	const textarea = document.createElement("textarea");
+	textarea.value = text;
+	textarea.style.position = "fixed";
+	textarea.style.opacity = "0";
+	document.body.appendChild(textarea);
+	textarea.select();
+
+	try {
+		const successful = document.execCommand("copy");
+		document.body.removeChild(textarea);
+
+		if (successful) {
+			onSuccess();
+		} else {
+			alert("Failed to copy to clipboard. Please copy manually: " + text);
+		}
+	} catch (err) {
+		document.body.removeChild(textarea);
+		console.error("Fallback copy failed:", err);
+		alert("Failed to copy to clipboard. Please copy manually: " + text);
+	}
 }
 
 // Handle form submission responses
