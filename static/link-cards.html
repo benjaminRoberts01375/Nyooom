@@ -2,8 +2,8 @@
 <div class="links-grid">
 	{{range .}}
 	<div class="link-card">
-		<div class="link-slug">{{.Slug}}</div>
-		<div class="link-url">{{.URL}}</div>
+		<div class="link-slug">/{{.Slug}}</div>
+		<div class="link-url">➡ <a href="{{.URL}}">{{.URL}}</a></div>
 		<div class="link-clicks">
 			<svg
 				xmlns="http://www.w3.org/2000/svg"

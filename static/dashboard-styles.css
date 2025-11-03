@@ -133,6 +133,11 @@
 	border-color: var(--color-submit);
 }
 
+.link-card a {
+	color: rgb(62, 178, 231);
+	text-decoration: none;
+}
+
 .link-slug {
 	font-size: 1.25rem;
 	font-weight: 700;
