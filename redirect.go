@@ -15,7 +15,7 @@ func epRedirect(db AdvancedDB) http.HandlerFunc {
 			httpError(w, "Couldn't find the URL you were looking for :(", http.StatusInternalServerError, err)
 			return
 		}
-		err = db.IncrementLinkClicks(r.Context(), slug, 1)
+		err = db.LinkAnalytics(r.Context(), slug, 1)
 		if err != nil { // Don't error out, it just sucks
 			logging.PrintErrStr("Failed to increment clicks for link " + slug + ": " + err.Error())
 		}
