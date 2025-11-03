@@ -7,6 +7,7 @@ import (
 	"nyooom/logging"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Helper function to render link cards template
@@ -20,9 +21,10 @@ func renderLinkCards(w http.ResponseWriter, links []Link) error {
 }
 
 type Link struct {
-	Slug   string
-	URL    string
-	Clicks int
+	Slug      string
+	URL       string
+	Clicks    int
+	LastClick *time.Time
 }
 
 func newLink(slug string, url string) (Link, error) {
