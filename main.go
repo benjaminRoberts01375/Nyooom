@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"nyooom/logging"
+	"time"
 )
 
 func main() {
@@ -14,7 +15,15 @@ func main() {
 	// Running
 	logging.Println("Hello, World")
 	setupEndpoints(db, jwt)
-	http.ListenAndServe(":8080", nil)
+
+	// Configure server with timeouts
+	server := &http.Server{
+		Addr:         ":8080",
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+	server.ListenAndServe()
 }
 
 func setupEndpoints(db AdvancedDB, jwt JWTService) {
