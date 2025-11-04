@@ -36,6 +36,11 @@ body {
 	border-left: 4pt solid var(--color-error);
 }
 
+.error-message a {
+	color: #fef08a;
+	text-decoration: underline;
+}
+
 .success-message {
 	background-color: #14532d;
 	color: #bbf7d0;

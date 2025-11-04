@@ -115,6 +115,27 @@ document.body.addEventListener("htmx:afterRequest", function (event) {
 	}
 });
 
+// Handle timeout errors for links loading
+document.body.addEventListener("htmx:timeout", function (event) {
+	if (event.detail.target.id === "links-container") {
+		event.detail.target.innerHTML = '<div class="error-message">Request timed out. Please <a href="#" onclick="htmx.trigger(\'#links-container\', \'refreshLinks\'); return false;">try again</a> or refresh the page.</div>';
+	}
+});
+
+// Handle other errors for links loading
+document.body.addEventListener("htmx:responseError", function (event) {
+	if (event.detail.target.id === "links-container") {
+		const status = event.detail.xhr.status;
+		let message = "Failed to load links.";
+		if (status === 401) {
+			message = "Session expired. Please <a href='/login'>log in again</a>.";
+		} else if (status >= 500) {
+			message = "Server error. Please try again later.";
+		}
+		event.detail.target.innerHTML = `<div class="error-message">${message}</div>`;
+	}
+});
+
 // Handle delete link
 function deleteLink(slug) {
 	if (!confirm(`Are you sure you want to delete the link "${slug}"?`)) {
