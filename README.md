@@ -30,7 +30,7 @@ A fast and lightweight URL shortener service built with Go, featuring user authe
 ## Quick Start
 ### Step 1: Install Docker
 
-[Docker](https://docs.docker.com/desktop/setup/install/linux/) is used to "containerize" CheckBag to ensure all of its assets are accounted for. CheckBag is built for a Linux deployment on a NAS or similar server, which typically run some form of Linux.
+[Docker](https://docs.docker.com/desktop/setup/install/linux/) is used to "containerize" Nyooom to ensure all of its assets are accounted for. Nyooom is built for a Linux deployment on a NAS or similar server, which typically run some form of Linux.
 
 ### Step 2: Downloading Files
 
