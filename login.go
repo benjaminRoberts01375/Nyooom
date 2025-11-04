@@ -88,7 +88,7 @@ func epJWTLogin(jwtService JWTService) http.HandlerFunc {
 			httpNewError(w, "Bad JWT", http.StatusNotAcceptable)
 			return
 		}
-		// TODO: Redirect to dashboard
+		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
 	}
 }
 
