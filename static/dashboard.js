@@ -94,6 +94,10 @@ document.body.addEventListener("htmx:afterRequest", function (event) {
 		if (event.detail.successful) {
 			responseDiv.className = "response-message success";
 			responseDiv.textContent = "Link created successfully!";
+
+			// Clear the form fields
+			document.getElementById("slug").value = "";
+			document.getElementById("url").value = "";
 		} else {
 			responseDiv.className = "response-message error";
 			responseDiv.textContent = "Failed to create link. Please check your inputs and try again.";
