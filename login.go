@@ -47,23 +47,11 @@ func epLogin(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
 			httpError(w, "Incorrect password", http.StatusForbidden, err)
 			return
 		}
-		// Generate a new JWT
-		token, err := jwtService.GenerateJWT(LoginDuration)
+		err = jwtService.setJWT(w)
 		if err != nil {
 			httpError(w, "Failed to generate JWT", http.StatusInternalServerError, err)
 			return
 		}
-
-		http.SetCookie(w, &http.Cookie{
-			Name:     CookieName,
-			Value:    token,
-			HttpOnly: false,
-			Secure:   false,
-			SameSite: http.SameSiteStrictMode,
-			Expires:  time.Now().Add(LoginDuration),
-			Path:     "/",
-		})
-
 	}
 }
 

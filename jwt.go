@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"nyooom/logging"
 	"os"
 	"time"
@@ -79,4 +80,23 @@ func loadJWTSecret(db AdvancedDB) JWTService {
 		panic("Failed to save JWT secret to database: " + err.Error())
 	}
 	return NewJWTService(newJWT, time.Now)
+}
+
+func (s *JWTService) setJWT(w http.ResponseWriter) error {
+	// Generate a new JWT
+	token, err := s.GenerateJWT(LoginDuration)
+	if err != nil {
+		return err
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     CookieName,
+		Value:    token,
+		HttpOnly: false,
+		Secure:   false,
+		SameSite: http.SameSiteStrictMode,
+		Expires:  time.Now().Add(LoginDuration),
+		Path:     "/",
+	})
+	return nil
 }
