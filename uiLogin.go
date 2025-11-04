@@ -19,16 +19,14 @@ func epLoginPage(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 			http.Redirect(w, r, "/create-account", http.StatusFound)
 			return
 		}
+
 		// Check if the user already has a valid JWT
-		cookie, err := r.Cookie(CookieName)
-		if err == nil && cookie.Value != "" {
-			_, ok := jwt.ValidateJWT(cookie.Value)
-			if ok {
-				// User is already authenticated, redirect to dashboard
-				http.Redirect(w, r, "/dashboard", http.StatusFound)
-				return
-			}
+		err = jwt.ReadAndValidateJWT(r)
+		if err == nil {
+			http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
+			return
 		}
+
 		// User exists, setup account
 		logging.Println("Serving user login HTML")
 		tmpl := template.Must(template.ParseFiles("static/login.html"))

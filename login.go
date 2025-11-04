@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func epLogin(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
+func epLogin(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost { // Only allow POST requests
 			httpNewError(w, "Method not allowed for password login", http.StatusMethodNotAllowed)
@@ -42,11 +42,11 @@ func epLogin(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
 			httpError(w, "Could not validate password", http.StatusInternalServerError, err)
 			return
 		}
-		if !jwtService.ValidatePassword(password, []byte(realHash)) {
+		if !jwt.ValidatePassword(password, []byte(realHash)) {
 			httpError(w, "Incorrect password", http.StatusForbidden, err)
 			return
 		}
-		err = jwtService.setJWT(w)
+		err = jwt.setJWT(w)
 		if err != nil {
 			httpError(w, "Failed to generate JWT", http.StatusInternalServerError, err)
 			return
@@ -93,7 +93,7 @@ func epCreateUser(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 			httpError(w, "Failed to create user", http.StatusInternalServerError, err)
 			return
 		}
-		err = jwtService.setJWT(w)
+		err = jwt.setJWT(w)
 		if err != nil {
 			httpError(w, "Failed to generate JWT", http.StatusInternalServerError, err)
 			return

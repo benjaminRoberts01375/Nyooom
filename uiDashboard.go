@@ -9,14 +9,10 @@ import (
 func epDashboardPage(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Verify user is authenticated
-		cookie, err := r.Cookie(CookieName)
-		if err != nil || cookie.Value == "" {
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
-		_, ok := jwt.ValidateJWT(cookie.Value)
-		if !ok {
-			http.Redirect(w, r, "/login", http.StatusFound)
+		err := jwt.ReadAndValidateJWT(r)
+		if err != nil {
+			logging.Println("JWT is invalid, redirecting to login page")
+			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 			return
 		}
 		// User is authenticated, serve dashboard

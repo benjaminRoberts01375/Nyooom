@@ -16,17 +16,14 @@ func epBase(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 			http.Redirect(w, r, "/create-account", http.StatusTemporaryRedirect)
 			return
 		}
-		// Check if the user is authenticated
-		cookie, err := r.Cookie(CookieName)
-		if err != nil || cookie.Value == "" { // No or bad cookie
+
+		// Verify user is authenticated
+		err = jwt.ReadAndValidateJWT(r)
+		if err != nil {
 			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
 			return
 		}
-		_, ok := jwt.ValidateJWT(cookie.Value)
-		if !ok { // Invalid JWT
-			http.Redirect(w, r, "/login", http.StatusTemporaryRedirect)
-			return
-		}
+
 		// All is good, send to the dashboard
 		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
 	}

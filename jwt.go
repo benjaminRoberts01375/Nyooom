@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"nyooom/logging"
 	"os"
@@ -9,9 +10,6 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 )
-
-const CookieName = "nyooom-session-token"
-const LoginDuration = time.Hour*24*6 + time.Hour*12 // 6.5 days
 
 type Claims struct {
 	jwt.RegisteredClaims
@@ -21,14 +19,18 @@ type Claims struct {
 type TimeFunc func() time.Time
 
 type JWTService struct {
-	secret   []byte
-	timeFunc TimeFunc
+	secret        []byte
+	timeFunc      TimeFunc
+	cookieName    string
+	loginDuration time.Duration
 }
 
 func NewJWTService(secret string, timeGenerator TimeFunc) JWTService {
 	return JWTService{
-		secret:   []byte(secret),
-		timeFunc: timeGenerator,
+		secret:        []byte(secret),
+		timeFunc:      timeGenerator,
+		cookieName:    "nyooom-session-token",
+		loginDuration: time.Hour*24*6 + time.Hour*12, // 6.5 days
 	}
 }
 
@@ -55,6 +57,20 @@ func (s *JWTService) ValidateJWT(tokenString string) (*Claims, bool) {
 		return nil, false
 	}
 	return claims, claims.ExpiresAt.After(s.timeFunc())
+}
+
+func (s *JWTService) ReadAndValidateJWT(r *http.Request) error {
+	cookie, err := r.Cookie(s.cookieName)
+	if err != nil {
+		return err
+	} else if cookie.Value == "" {
+		return errors.New("JWT is empty")
+	}
+	_, ok := s.ValidateJWT(cookie.Value)
+	if !ok {
+		return errors.New("JWT is invalid")
+	}
+	return nil
 }
 
 func loadJWTSecret(db AdvancedDB) JWTService {
@@ -84,18 +100,18 @@ func loadJWTSecret(db AdvancedDB) JWTService {
 
 func (s *JWTService) setJWT(w http.ResponseWriter) error {
 	// Generate a new JWT
-	token, err := s.GenerateJWT(LoginDuration)
+	token, err := s.GenerateJWT(s.loginDuration)
 	if err != nil {
 		return err
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     CookieName,
+		Name:     s.cookieName,
 		Value:    token,
 		HttpOnly: false,
 		Secure:   false,
 		SameSite: http.SameSiteStrictMode,
-		Expires:  time.Now().Add(LoginDuration),
+		Expires:  time.Now().Add(s.loginDuration),
 		Path:     "/",
 	})
 	return nil

@@ -56,14 +56,9 @@ func (link Link) String() string {
 func epCreateLink(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Verify user is authenticated
-		cookie, err := r.Cookie(CookieName)
-		if err != nil || cookie.Value == "" {
-			httpError(w, "Unauthorized", http.StatusUnauthorized, err)
-			return
-		}
-		_, ok := jwt.ValidateJWT(cookie.Value)
-		if !ok {
-			httpError(w, "Unauthorized", http.StatusUnauthorized, errors.New("invalid JWT"))
+		err := jwt.ReadAndValidateJWT(r)
+		if err != nil {
+			httpError(w, "JWT is invalid for link deletion", http.StatusForbidden, err)
 			return
 		}
 
@@ -97,14 +92,9 @@ func epCreateLink(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 func epDeleteLink(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Verify user is authenticated
-		cookie, err := r.Cookie(CookieName)
-		if err != nil || cookie.Value == "" {
-			httpError(w, "Unauthorized", http.StatusUnauthorized, err)
-			return
-		}
-		_, ok := jwt.ValidateJWT(cookie.Value)
-		if !ok {
-			httpError(w, "Unauthorized", http.StatusUnauthorized, errors.New("invalid JWT"))
+		err := jwt.ReadAndValidateJWT(r)
+		if err != nil {
+			httpError(w, "JWT is invalid for link deletion", http.StatusForbidden, err)
 			return
 		}
 
@@ -123,14 +113,9 @@ func epDeleteLink(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 func epGetLinks(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Verify user is authenticated
-		cookie, err := r.Cookie(CookieName)
-		if err != nil || cookie.Value == "" {
-			httpError(w, "Unauthorized", http.StatusUnauthorized, err)
-			return
-		}
-		_, ok := jwt.ValidateJWT(cookie.Value)
-		if !ok {
-			httpError(w, "Unauthorized", http.StatusUnauthorized, errors.New("invalid JWT"))
+		err := jwt.ReadAndValidateJWT(r)
+		if err != nil {
+			httpError(w, "JWT is invalid for getting all links", http.StatusForbidden, err)
 			return
 		}
 
