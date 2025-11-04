@@ -36,6 +36,9 @@ WORKDIR /home/appuser
 # Copy the Go binary from builder
 COPY --from=builder --chown=appuser:appgroup /app/main /home/appuser/main
 
+# Copy static files from builder
+COPY --from=builder --chown=appuser:appgroup /app/static /home/appuser/static
+
 # Create the Nyooom directory and make it world-writable to handle volume mounts
 RUN mkdir -p /home/appuser/Nyooom && \
     chmod 777 /home/appuser/Nyooom
