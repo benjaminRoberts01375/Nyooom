@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"net/http"
+	"nyooom/logging"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -20,8 +21,10 @@ func epLogin(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
 			httpError(w, "Could not check if user already exists", http.StatusInternalServerError, err)
 			return
 		}
-		if exists {
-			// TODO: Redirect to login page
+		if !exists {
+			logging.Println("No users exist")
+			http.Redirect(w, r, "/create-account", http.StatusTemporaryRedirect)
+			return
 		}
 
 		err = r.ParseForm()
