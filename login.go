@@ -137,21 +137,6 @@ func epCreateUser(db AdvancedDB) http.HandlerFunc {
 	}
 }
 
-func epUserExists(db AdvancedDB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		exists, err := db.UserExists(r.Context())
-		if err != nil {
-			httpError(w, "Failed to check if the user exists", http.StatusInternalServerError, err)
-			return
-		}
-		if exists {
-			// TODO: Redirect to login page
-		} else {
-			// TODO: Redirect to create account page
-		}
-	}
-}
-
 func (s *JWTService) ValidatePassword(passwordAttempt string, realPasswordHash []byte) bool {
 	return bcrypt.CompareHashAndPassword(realPasswordHash, []byte(passwordAttempt)) == nil
 }
