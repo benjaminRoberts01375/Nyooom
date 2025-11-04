@@ -54,32 +54,7 @@ func epLogin(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
 	}
 }
 
-func epJWTLogin(jwtService JWTService) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost { // Only allow POST requests
-			httpNewError(w, "Method not allowed for JWT login", http.StatusMethodNotAllowed)
-			return
-		}
-		err := r.ParseForm()
-		if err != nil {
-			httpNewError(w, "Failed to parse JWT form", http.StatusBadRequest)
-			return
-		}
-		password := r.Form.Get("jwt")
-		if password == "" {
-			httpNewError(w, "Password is required for login", http.StatusBadRequest)
-			return
-		}
-		_, valid := jwtService.ValidateJWT(password)
-		if !valid {
-			httpNewError(w, "Bad JWT", http.StatusNotAcceptable)
-			return
-		}
-		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
-	}
-}
-
-func epCreateUser(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
+func epCreateUser(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost { // Only allow POST requests
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)

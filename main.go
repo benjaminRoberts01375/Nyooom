@@ -32,7 +32,6 @@ func setupEndpoints(db AdvancedDB, jwt JWTService) {
 	http.HandleFunc("/api/delete-link", epDeleteLink(db, jwt))
 	http.HandleFunc("/api/get-links", epGetLinks(db, jwt))
 	http.HandleFunc("/api/login", epLogin(db, jwt))
-	http.HandleFunc("/api/jwt-login", epJWTLogin(jwt))
 	http.HandleFunc("/api/create-user", epCreateUser(db, jwt))
 	http.HandleFunc("/{id}", epRedirect(db))
 
