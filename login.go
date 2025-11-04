@@ -95,8 +95,16 @@ func epCreateUser(db AdvancedDB) http.HandlerFunc {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return
 		}
+		exists, err := db.UserExists(r.Context())
+		if exists {
+			httpNewError(w, "User already exists", http.StatusForbidden)
+			return
+		} else if err != nil {
+			httpError(w, "Failed to check if user exists", http.StatusInternalServerError, err)
+			return
+		}
 
-		err := r.ParseForm()
+		err = r.ParseForm()
 		if err != nil {
 			httpError(w, "Failed to parse form", http.StatusBadRequest, err)
 			return

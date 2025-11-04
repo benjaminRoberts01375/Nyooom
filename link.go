@@ -53,8 +53,20 @@ func (link Link) String() string {
 	return link.Slug + " -> " + link.URL + " has " + strconv.Itoa(link.Clicks) + " clicks"
 }
 
-func epCreateLink(db AdvancedDB) http.HandlerFunc {
+func epCreateLink(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Verify user is authenticated
+		cookie, err := r.Cookie(CookieName)
+		if err != nil || cookie.Value == "" {
+			httpError(w, "Unauthorized", http.StatusUnauthorized, err)
+			return
+		}
+		_, ok := jwt.ValidateJWT(cookie.Value)
+		if !ok {
+			httpError(w, "Unauthorized", http.StatusUnauthorized, errors.New("invalid JWT"))
+			return
+		}
+
 		link, err := newLink(r.FormValue("slug"), r.FormValue("url"))
 		if err != nil {
 			httpError(w, "Failed to create link \""+link.Slug+".\"", http.StatusBadRequest, err)
@@ -82,10 +94,22 @@ func epCreateLink(db AdvancedDB) http.HandlerFunc {
 	}
 }
 
-func epDeleteLink(db AdvancedDB) http.HandlerFunc {
+func epDeleteLink(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Verify user is authenticated
+		cookie, err := r.Cookie(CookieName)
+		if err != nil || cookie.Value == "" {
+			httpError(w, "Unauthorized", http.StatusUnauthorized, err)
+			return
+		}
+		_, ok := jwt.ValidateJWT(cookie.Value)
+		if !ok {
+			httpError(w, "Unauthorized", http.StatusUnauthorized, errors.New("invalid JWT"))
+			return
+		}
+
 		linkSlug := r.URL.Query().Get("slug")
-		err := db.DeleteLink(r.Context(), linkSlug)
+		err = db.DeleteLink(r.Context(), linkSlug)
 		if err != nil {
 			httpError(w, "Failed to delete link \""+linkSlug+".\" ", http.StatusInternalServerError, err)
 			return
@@ -96,8 +120,20 @@ func epDeleteLink(db AdvancedDB) http.HandlerFunc {
 	}
 }
 
-func epGetLinks(db AdvancedDB) http.HandlerFunc {
+func epGetLinks(db AdvancedDB, jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Verify user is authenticated
+		cookie, err := r.Cookie(CookieName)
+		if err != nil || cookie.Value == "" {
+			httpError(w, "Unauthorized", http.StatusUnauthorized, err)
+			return
+		}
+		_, ok := jwt.ValidateJWT(cookie.Value)
+		if !ok {
+			httpError(w, "Unauthorized", http.StatusUnauthorized, errors.New("invalid JWT"))
+			return
+		}
+
 		links, err := db.GetLinks(r.Context())
 		if err != nil {
 			httpError(w, "Failed to get links", http.StatusInternalServerError, err)
