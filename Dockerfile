@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.25-alpine AS builder
+FROM --platform=$BUILDPLATFORM golang:1.25-alpine AS builder
 
 # Install git for go mod download
 RUN apk add --no-cache git
@@ -16,8 +16,14 @@ RUN go mod download && go mod tidy
 # Copy source code
 COPY . .
 
-# Build the application
-RUN go build -o main .
+# Build the application with cross-compilation
+ARG TARGETOS
+ARG TARGETARCH
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build \
+    -ldflags='-w -s' \
+    -trimpath \
+    -o main .
+
 # Final stage
 FROM alpine:3.20
 
