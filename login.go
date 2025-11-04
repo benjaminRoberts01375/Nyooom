@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"nyooom/logging"
-	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -80,7 +79,7 @@ func epJWTLogin(jwtService JWTService) http.HandlerFunc {
 	}
 }
 
-func epCreateUser(db AdvancedDB) http.HandlerFunc {
+func epCreateUser(db AdvancedDB, jwtService JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost { // Only allow POST requests
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -119,9 +118,12 @@ func epCreateUser(db AdvancedDB) http.HandlerFunc {
 			httpError(w, "Failed to create user", http.StatusInternalServerError, err)
 			return
 		}
-		w.WriteHeader(http.StatusCreated)
-
-		// TODO: Redirect to dashboard
+		err = jwtService.setJWT(w)
+		if err != nil {
+			httpError(w, "Failed to generate JWT", http.StatusInternalServerError, err)
+			return
+		}
+		http.Redirect(w, r, "/dashboard", http.StatusTemporaryRedirect)
 	}
 }
 
