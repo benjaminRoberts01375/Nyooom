@@ -54,8 +54,10 @@
 	justify-content: space-between;
 	align-items: center;
 	margin-bottom: 1.5rem;
-	border-bottom: 1px solid #334155;
-	padding-bottom: 1rem;
+}
+
+.modal-header > h2 {
+	color: var(--label);
 }
 
 .modal-close {
