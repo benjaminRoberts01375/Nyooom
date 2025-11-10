@@ -1,3 +1,19 @@
+// Create reusable DateTimeFormat instances (optimization)
+const shortDateFormatter = new Intl.DateTimeFormat("default", {
+	year: "numeric",
+	month: "short",
+	day: "numeric",
+});
+
+const fullDateFormatter = new Intl.DateTimeFormat("default", {
+	year: "numeric",
+	month: "short",
+	day: "numeric",
+	hour: "numeric",
+	minute: "2-digit",
+	second: "2-digit",
+});
+
 // Format timestamp to user's local timezone
 function formatTimestamps() {
 	const timestampElements = document.querySelectorAll(".link-last-click");
@@ -5,19 +21,8 @@ function formatTimestamps() {
 		const timestamp = element.getAttribute("data-timestamp");
 		if (timestamp) {
 			const date = new Date(timestamp);
-			const formatted = new Intl.DateTimeFormat("default", {
-				year: "numeric",
-				month: "short",
-				day: "numeric",
-			}).format(date);
-			const fullFormatted = new Intl.DateTimeFormat("default", {
-				year: "numeric",
-				month: "short",
-				day: "numeric",
-				hour: "numeric",
-				minute: "2-digit",
-				second: "2-digit",
-			}).format(date);
+			const formatted = shortDateFormatter.format(date);
+			const fullFormatted = fullDateFormatter.format(date);
 			const displaySpan = element.querySelector(".timestamp-display");
 			if (displaySpan) {
 				displaySpan.textContent = formatted;
@@ -164,11 +169,36 @@ function deleteLink(slug) {
 let qrLogoImage = null;
 let currentQRUrl = "";
 
+// Cached DOM references for QR modal (optimization)
+let qrModalElements = null;
+
+// Modal click handler (stored to prevent memory leak)
+function handleModalBackdropClick(event) {
+	const modal = document.getElementById("qr-modal");
+	if (event.target === modal) {
+		closeQRModal();
+	}
+}
+
 // Show QR code modal
 function showQRCode(slug) {
-	currentQRUrl = window.location.origin + "/" + slug;
+	currentQRUrl = `${window.location.origin}/${slug}`;
 	const modal = document.getElementById("qr-modal");
 	const urlDisplay = document.querySelector(".qr-url-display");
+
+	// Cache DOM elements on first modal open (optimization)
+	if (!qrModalElements) {
+		qrModalElements = {
+			container: document.getElementById("qr-code-container"),
+			paddingSlider: document.getElementById("qr-padding"),
+			radiusSlider: document.getElementById("qr-radius"),
+			paddingValue: document.getElementById("qr-padding-value"),
+			radiusValue: document.getElementById("qr-radius-value"),
+			preview: document.getElementById("logo-preview"),
+			removeBtn: document.getElementById("remove-logo-btn"),
+			fileInput: document.getElementById("qr-logo"),
+		};
+	}
 
 	// Display the URL
 	urlDisplay.textContent = currentQRUrl;
@@ -185,20 +215,17 @@ function showQRCode(slug) {
 	// Show the modal
 	modal.classList.add("show");
 
-	// Close modal when clicking outside
-	modal.onclick = function (event) {
-		if (event.target === modal) {
-			closeQRModal();
-		}
-	};
+	// Close modal when clicking outside (remove old listener to prevent leak)
+	modal.removeEventListener("click", handleModalBackdropClick);
+	modal.addEventListener("click", handleModalBackdropClick);
 }
 
 // Generate QR code with optional logo
 function generateQRCode() {
-	const qrContainer = document.getElementById("qr-code-container");
+	const qrContainer = qrModalElements?.container || document.getElementById("qr-code-container");
 
 	// Clear previous QR code
-	qrContainer.innerHTML = "";
+	qrContainer.textContent = "";
 
 	// Generate new QR code
 	new QRCode(qrContainer, {
@@ -217,23 +244,26 @@ function generateQRCode() {
 	}
 }
 
-// Wait for canvas to be ready and then overlay logo
-function waitForCanvasAndOverlay() {
-	const qrContainer = document.getElementById("qr-code-container");
+// Wait for canvas to be ready and then overlay logo (with timeout to prevent infinite loop)
+function waitForCanvasAndOverlay(retries = 0) {
+	const maxRetries = 60; // Max ~1 second at 60fps
+	const qrContainer = qrModalElements?.container || document.getElementById("qr-code-container");
 	const canvas = qrContainer.querySelector("canvas");
 
 	if (canvas && canvas.width > 0) {
 		// Canvas is ready, overlay the logo
 		overlayLogoOnQR();
-	} else {
+	} else if (retries < maxRetries) {
 		// Canvas not ready yet, check again in next frame
-		requestAnimationFrame(waitForCanvasAndOverlay);
+		requestAnimationFrame(() => waitForCanvasAndOverlay(retries + 1));
+	} else {
+		console.error("QR code canvas failed to render after maximum retries");
 	}
 }
 
 // Overlay logo on the QR code canvas
 function overlayLogoOnQR() {
-	const qrContainer = document.getElementById("qr-code-container");
+	const qrContainer = qrModalElements?.container || document.getElementById("qr-code-container");
 	const canvas = qrContainer.querySelector("canvas");
 
 	if (!canvas || !qrLogoImage) return;
@@ -304,6 +334,14 @@ function handleLogoUpload(event) {
 		return;
 	}
 
+	// Validate file size (max 2MB for performance)
+	const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+	if (file.size > maxSize) {
+		alert("Logo image is too large. Please select an image under 2MB.");
+		event.target.value = "";
+		return;
+	}
+
 	// Read the file and store it
 	const reader = new FileReader();
 	reader.onload = function (e) {
@@ -312,15 +350,16 @@ function handleLogoUpload(event) {
 			qrLogoImage = img;
 
 			// Show preview
-			const preview = document.getElementById("logo-preview");
-			preview.innerHTML = "";
+			const preview = qrModalElements?.preview || document.getElementById("logo-preview");
+			preview.textContent = "";
 			const previewImg = document.createElement("img");
 			previewImg.src = e.target.result;
 			preview.appendChild(previewImg);
 			preview.classList.add("show");
 
 			// Show remove button
-			document.getElementById("remove-logo-btn").style.display = "block";
+			const removeBtn = qrModalElements?.removeBtn || document.getElementById("remove-logo-btn");
+			removeBtn.style.display = "block";
 
 			// Regenerate QR code with logo
 			generateQRCode();
@@ -333,13 +372,13 @@ function handleLogoUpload(event) {
 // Remove logo
 function removeLogo() {
 	qrLogoImage = null;
-	const fileInput = document.getElementById("qr-logo");
-	const preview = document.getElementById("logo-preview");
-	const removeBtn = document.getElementById("remove-logo-btn");
+	const fileInput = qrModalElements?.fileInput || document.getElementById("qr-logo");
+	const preview = qrModalElements?.preview || document.getElementById("logo-preview");
+	const removeBtn = qrModalElements?.removeBtn || document.getElementById("remove-logo-btn");
 
 	if (fileInput) fileInput.value = "";
 	if (preview) {
-		preview.innerHTML = "";
+		preview.textContent = "";
 		preview.classList.remove("show");
 	}
 	if (removeBtn) removeBtn.style.display = "none";
@@ -352,11 +391,11 @@ function removeLogo() {
 
 // Update QR code styling based on slider values
 function updateQRStyle() {
-	const qrContainer = document.getElementById("qr-code-container");
-	const paddingSlider = document.getElementById("qr-padding");
-	const radiusSlider = document.getElementById("qr-radius");
-	const paddingValue = document.getElementById("qr-padding-value");
-	const radiusValue = document.getElementById("qr-radius-value");
+	const qrContainer = qrModalElements?.container || document.getElementById("qr-code-container");
+	const paddingSlider = qrModalElements?.paddingSlider || document.getElementById("qr-padding");
+	const radiusSlider = qrModalElements?.radiusSlider || document.getElementById("qr-radius");
+	const paddingValue = qrModalElements?.paddingValue || document.getElementById("qr-padding-value");
+	const radiusValue = qrModalElements?.radiusValue || document.getElementById("qr-radius-value");
 
 	// Update display values
 	paddingValue.textContent = paddingSlider.value;
@@ -369,13 +408,15 @@ function updateQRStyle() {
 
 // Download QR code as PNG
 function downloadQRCode() {
-	const qrContainer = document.getElementById("qr-code-container");
+	const qrContainer = qrModalElements?.container || document.getElementById("qr-code-container");
 	const canvas = qrContainer.querySelector("canvas");
 
 	if (canvas) {
 		// Get current slider values
-		const padding = parseInt(document.getElementById("qr-padding").value);
-		const radius = parseInt(document.getElementById("qr-radius").value);
+		const paddingSlider = qrModalElements?.paddingSlider || document.getElementById("qr-padding");
+		const radiusSlider = qrModalElements?.radiusSlider || document.getElementById("qr-radius");
+		const padding = parseInt(paddingSlider.value);
+		const radius = parseInt(radiusSlider.value);
 
 		// Create a new canvas with padding and styling
 		const outputCanvas = document.createElement("canvas");
@@ -429,7 +470,8 @@ function downloadQRCode() {
 			document.body.appendChild(link);
 			link.click();
 			document.body.removeChild(link);
-			URL.revokeObjectURL(url);
+			// Revoke URL after a short delay to ensure download initiates
+			setTimeout(() => URL.revokeObjectURL(url), 100);
 		});
 	}
 }

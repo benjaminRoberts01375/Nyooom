@@ -205,22 +205,6 @@
 	object-fit: contain;
 }
 
-.btn-remove-logo {
-	padding: 0.5rem 1rem;
-	background: rgba(220, 38, 38, 0.1);
-	color: #ef4444;
-	border: 1pt solid rgba(220, 38, 38, 0.3);
-	border-radius: 4pt;
-	cursor: pointer;
-	font-size: 0.85rem;
-	transition: background-color 0.2s, border-color 0.2s;
-}
-
-.btn-remove-logo:hover {
-	background: rgba(220, 38, 38, 0.2);
-	border-color: rgba(220, 38, 38, 0.5);
-}
-
 .slider-control {
 	display: flex;
 	flex-direction: column;
