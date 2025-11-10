@@ -40,9 +40,22 @@ func setupEndpoints(db AdvancedDB, jwt JWTService, devMode bool) {
 	http.HandleFunc("/{id}", epRedirect(db))
 
 	// UI endpoints
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
+	fileServer := http.FileServer(http.Dir("./static"))
+	http.Handle("/static/", http.StripPrefix("/static/", noCacheInDevMode(fileServer, devMode)))
 	http.HandleFunc("/", epBase(db, jwt))
 	http.HandleFunc("/create-account", epCreateUserPage(db))
 	http.HandleFunc("/login", epLoginPage(db, jwt))
 	http.HandleFunc("/dashboard", epDashboardPage(jwt))
+}
+
+// noCacheInDevMode wraps a handler to prevent caching in dev mode
+func noCacheInDevMode(h http.Handler, devMode bool) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if devMode {
+			w.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			w.Header().Set("Pragma", "no-cache")
+			w.Header().Set("Expires", "0")
+		}
+		h.ServeHTTP(w, r)
+	})
 }
