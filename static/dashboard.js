@@ -199,3 +199,23 @@ function closeQRModal() {
 	const modal = document.getElementById("qr-modal");
 	modal.classList.remove("show");
 }
+
+// Download QR code as PNG
+function downloadQRCode() {
+	const qrContainer = document.getElementById("qr-code-container");
+	const canvas = qrContainer.querySelector("canvas");
+
+	if (canvas) {
+		// Convert canvas to blob and download
+		canvas.toBlob((blob) => {
+			const url = URL.createObjectURL(blob);
+			const link = document.createElement("a");
+			link.href = url;
+			link.download = "qr-code.png";
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			URL.revokeObjectURL(url);
+		});
+	}
+}

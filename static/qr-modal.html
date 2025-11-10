@@ -2,11 +2,14 @@
 	<div class="modal-content">
 		<div class="modal-header">
 			<h2>QR Code</h2>
-			<button class="modal-close" onclick="closeQRModal()">&times;</button>
 		</div>
 		<div class="modal-body">
 			<div id="qr-code-container"></div>
 			<div class="qr-url-display"></div>
+		</div>
+		<div class="modal-footer">
+			<button class="btn-primary" onclick="downloadQRCode()">Download QR Code</button>
+			<button class="btn-neutral" onclick="closeQRModal()">Back</button>
 		</div>
 	</div>
 </div>

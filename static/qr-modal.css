@@ -8,7 +8,7 @@
 	width: 100%;
 	height: 100%;
 	background-color: rgba(0, 0, 0, 0.7);
-	backdrop-filter: blur(4px);
+	backdrop-filter: blur(4pt);
 	animation: fadeIn 0.2s ease-in-out;
 }
 
@@ -29,12 +29,12 @@
 
 .modal-content {
 	background: var(--primary-background);
-	border: 1px solid #334155;
-	border-radius: 12px;
+	border: 1pt solid #334155;
+	border-radius: 10pt;
 	padding: 2rem;
-	max-width: 500px;
+	max-width: 500pt;
 	width: 90%;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 8pt 32pt rgba(0, 0, 0, 0.5);
 	animation: slideUp 0.3s ease-out;
 }
 
@@ -85,12 +85,24 @@
 	flex-direction: column;
 	align-items: center;
 	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.modal-footer {
+	display: flex;
+	justify-content: space-between;
+	gap: 1rem;
+	padding-top: 1rem;
+}
+
+.modal-footer button {
+	flex: 1;
 }
 
 #qr-code-container {
 	padding: 1rem;
 	background: white;
-	border-radius: 8px;
+	border-radius: 8pt;
 	display: flex;
 	justify-content: center;
 	align-items: center;
