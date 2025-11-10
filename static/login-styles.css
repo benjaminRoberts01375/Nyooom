@@ -48,7 +48,6 @@
 }
 
 .auth-form label {
-	font-size: 14pt;
 	font-weight: 500;
 	color: var(--label);
 	margin-bottom: 8pt;
@@ -59,13 +58,6 @@
 	width: 100%;
 	padding: 12pt 24pt;
 	font-size: 16pt;
-	border: solid var(--color-submit);
-	background: color-mix(in srgb, var(--color-submit) 13%, transparent);
-	color: var(--label);
-	border-radius: 6pt;
-	cursor: pointer;
-	transition: background-color 0.2s, transform 0.1s;
-	font-weight: 500;
 }
 
 .auth-button:hover {

@@ -118,7 +118,8 @@ document.body.addEventListener("htmx:afterRequest", function (event) {
 // Handle timeout errors for links loading
 document.body.addEventListener("htmx:timeout", function (event) {
 	if (event.detail.target.id === "links-container") {
-		event.detail.target.innerHTML = '<div class="error-message">Request timed out. Please <a href="#" onclick="htmx.trigger(\'#links-container\', \'refreshLinks\'); return false;">try again</a> or refresh the page.</div>';
+		event.detail.target.innerHTML =
+			'<div class="error-message">Request timed out. Please <a href="#" onclick="htmx.trigger(\'#links-container\', \'refreshLinks\'); return false;">try again</a> or refresh the page.</div>';
 	}
 });
 
@@ -157,4 +158,44 @@ function deleteLink(slug) {
 			console.error("Error deleting link:", err);
 			alert("Failed to delete link");
 		});
+}
+
+// Show QR code modal
+function showQRCode(slug) {
+	const url = window.location.origin + "/" + slug;
+	const modal = document.getElementById("qr-modal");
+	const qrContainer = document.getElementById("qr-code-container");
+	const urlDisplay = document.querySelector(".qr-url-display");
+
+	// Clear previous QR code
+	qrContainer.innerHTML = "";
+
+	// Generate new QR code
+	new QRCode(qrContainer, {
+		text: url,
+		width: 256,
+		height: 256,
+		colorDark: "#000000",
+		colorLight: "#ffffff",
+		correctLevel: QRCode.CorrectLevel.H,
+	});
+
+	// Display the URL
+	urlDisplay.textContent = url;
+
+	// Show the modal
+	modal.classList.add("show");
+
+	// Close modal when clicking outside
+	modal.onclick = function (event) {
+		if (event.target === modal) {
+			closeQRModal();
+		}
+	};
+}
+
+// Close QR code modal
+function closeQRModal() {
+	const modal = document.getElementById("qr-modal");
+	modal.classList.remove("show");
 }

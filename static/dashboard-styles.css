@@ -67,52 +67,12 @@
 	background-color: #0f172a;
 }
 
-.btn {
-	padding: 0.75rem 1.5rem;
-	border-radius: 6px;
-	font-size: 1rem;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.2s;
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-}
-
-.btn-primary {
-	border: solid var(--color-submit);
-	background: color-mix(in srgb, var(--color-submit) 13%, transparent);
-	color: var(--label);
-}
-
-.btn-primary:hover {
-	background: var(--color-submit);
-}
-
-.btn-danger {
-	border: solid var(--color-error);
-	background: color-mix(in srgb, var(--color-error) 13%, transparent);
-	color: var(--label);
-	padding: 0.5rem 1rem;
-	font-size: 0.9rem;
-}
-
-.btn-danger:hover {
-	background: var(--color-error);
-}
-
-.btn:disabled {
-	opacity: 0.6;
-	cursor: not-allowed;
-	transform: none;
-}
-
 /* Links Section */
 .links-section {
 	background: var(--primary-background);
 	padding: 2rem;
-	border-radius: 12px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	border-radius: 10pt;
+	box-shadow: 0 2pt 6pt rgba(0, 0, 0, 0.3);
 }
 
 .links-section h2 {
@@ -121,78 +81,11 @@
 	font-size: 1.5rem;
 }
 
-.links-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, 275pt);
-	gap: 1rem;
-}
-
-.link-card {
-	background: #0f172a;
-	border: 1px solid #334155;
-	padding: 1.5rem;
-	border-radius: 10px;
-	transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-}
-
-.link-card:hover {
-	box-shadow: 0 4pt 12pt rgba(0, 0, 0, 0.3);
-	border-color: var(--color-submit);
-}
-
-.link-card a {
-	color: rgb(62, 178, 231);
-	text-decoration: none;
-}
-
-.link-slug {
-	font-size: 1.25rem;
-	font-weight: 700;
-	color: var(--label);
-	margin-bottom: 0.5rem;
-	word-break: break-word;
-}
-
-.link-url {
-	color: var(--sub-label);
-	margin-bottom: 0.75rem;
-	word-break: break-all;
-	font-size: 0.95rem;
-}
-
-.link-clicks {
-	display: inline-flex;
-	align-items: center;
-	gap: 0.5rem;
-	padding: 0.5rem 1rem;
-	background: color-mix(in srgb, var(--color-submit) 15%, transparent);
-	border: 1px solid var(--color-submit);
-	border-radius: 20px;
-	font-weight: 600;
-	color: var(--label);
-	font-size: 0.9rem;
-	width: fit-content;
-}
-
-.link-clicks svg {
-	color: var(--color-submit);
-}
-
 .link-stats {
 	display: flex;
 	gap: 0.5rem;
 	flex-wrap: nowrap;
 	margin-top: auto;
-}
-
-.link-last-click {
-	flex: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 }
 
 .link-actions {
@@ -203,19 +96,6 @@
 
 .copy-button {
 	flex: 1;
-	border: solid var(--color-submit);
-	background: color-mix(in srgb, var(--color-submit) 13%, transparent);
-	color: var(--label);
-	padding: 0.5rem;
-	border-radius: 6px;
-	cursor: pointer;
-	font-size: 0.9rem;
-	font-weight: 600;
-	transition: all 0.2s;
-}
-
-.copy-button:hover {
-	background: var(--color-submit);
 }
 
 .copy-button.copied {
@@ -257,11 +137,6 @@
 
 	.form-group {
 		min-width: 100%;
-	}
-
-	.btn {
-		width: 100%;
-		justify-content: center;
 	}
 
 	.links-grid {

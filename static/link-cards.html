@@ -6,11 +6,11 @@
 		<div class="link-url">➡ <a href="{{.URL}}">{{.URL}}</a></div>
 		<div class="link-stats">
 			{{if .LastClick}}
-				<div class="link-clicks link-last-click" data-timestamp="{{.LastClick.Format "2006-01-02T15:04:05Z07:00"}}">
+				<div class="link-stat link-last-click" data-timestamp="{{.LastClick.Format "2006-01-02T15:04:05Z07:00"}}">
 					Last click: <span class="timestamp-display">Loading...</span>
 				</div>
 			{{end}}
-			<div class="link-clicks">
+			<div class="link-stat">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
 					width="16"
@@ -27,7 +27,7 @@
 			</div>
 		</div>
 		<div class="link-actions">
-			<button class="copy-button" onclick="copyToClipboard(event, '{{.Slug}}')">
+			<button class="copy-button btn-primary" onclick="copyToClipboard(event, '{{.Slug}}')">
 				Copy Short Link
 			</button>
 			<button class="btn btn-danger" onclick="deleteLink('{{.Slug}}')">Delete</button>

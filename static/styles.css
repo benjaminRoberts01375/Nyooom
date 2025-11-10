@@ -62,7 +62,7 @@ body {
 .response-message {
 	margin-top: 1rem;
 	padding: 12pt;
-	border-radius: 6px;
+	border-radius: 4pt;
 	display: none;
 }
 
@@ -132,4 +132,64 @@ input[type="email"] {
 input:focus {
 	outline: none;
 	border-color: var(--color-submit);
+}
+
+.btn,
+.btn-danger,
+.btn-primary,
+.btn-neutral {
+	border-radius: 4pt;
+	font-size: 1rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+	display: inline-flex;
+	align-items: center;
+	text-align: center;
+	justify-content: center;
+	padding: 7pt 10pt;
+	color: var(--label);
+}
+
+.btn-danger {
+	border: solid var(--color-error);
+	background: color-mix(in srgb, var(--color-error) 13%, transparent);
+}
+
+.btn-danger:hover {
+	background: var(--color-error);
+}
+
+.btn-primary {
+	border: solid var(--color-submit);
+	background: color-mix(in srgb, var(--color-submit) 13%, transparent);
+}
+
+.btn-primary:hover {
+	background: var(--color-submit);
+}
+
+.btn-neutral {
+	border: solid var(--label);
+	background: color-mix(in srgb, var(--label) 13%, transparent);
+}
+
+.btn-neutral:hover {
+	border: solid var(--label);
+	background: var(--label);
+	color: black;
+}
+
+.btn-icon {
+	aspect-ratio: 1 / 1;
+	padding: 0.5rem;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.btn:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
 }
