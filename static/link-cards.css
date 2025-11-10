@@ -54,6 +54,7 @@
 	font-weight: 600;
 	color: var(--label);
 	width: fit-content;
+	font-size: 11pt; /* macOS is line wrapping at larger font sizes */
 }
 
 .link-stat svg {
