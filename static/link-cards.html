@@ -27,16 +27,16 @@
 			</div>
 		</div>
 		<div class="link-actions">
-			<button class="copy-button btn-primary" onclick="copyToClipboard(event, '{{.Slug}}')">
+			<button class="copy-button btn-primary" onclick="copyToClipboard(event, '{{.Slug}}')" title="Copy the shortened link for /{{.Slug}}">
 				Copy Short Link
 			</button>
-			<button class="btn-neutral btn-icon" onclick="showQRCode('{{.Slug}}')">
+			<button class="btn-neutral btn-icon" onclick="showQRCode('{{.Slug}}')" title="Create a QR code for /{{.Slug}}">
 				<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 					<path stroke="currentColor" stroke-linejoin="round" stroke-width="1.5" d="M4 4h6v6H4V4Zm10 10h6v6h-6v-6Zm0-10h6v6h-6V4Zm-4 10h.01v.01H10V14Zm0 4h.01v.01H10V18Zm-3 2h.01v.01H7V20Zm0-4h.01v.01H7V16Zm-3 2h.01v.01H4V18Zm0-4h.01v.01H4V14Z"/>
 					<path stroke="currentColor" stroke-linejoin="round" stroke-width="1.5" d="M7 7h.01v.01H7V7Zm10 10h.01v.01H17V17Z"/>
 				</svg>
 			</button>
-			<button class="btn-danger btn-icon" onclick="deleteLink('{{.Slug}}')">
+			<button class="btn-danger btn-icon" onclick="deleteLink('{{.Slug}}')" title="Delete the shortened link for /{{.Slug}}">
 				<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
 					<path fill-rule="evenodd" d="M8.586 2.586A2 2 0 0 1 10 2h4a2 2 0 0 1 2 2v2h3a1 1 0 1 1 0 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V8a1 1 0 0 1 0-2h3V4a2 2 0 0 1 .586-1.414ZM10 6h4V4h-4v2Zm1 4a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Zm4 0a1 1 0 1 0-2 0v8a1 1 0 1 0 2 0v-8Z" clip-rule="evenodd"/>
 				</svg>
