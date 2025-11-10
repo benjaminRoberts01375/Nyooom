@@ -183,6 +183,9 @@ function showQRCode(slug) {
 	// Display the URL
 	urlDisplay.textContent = url;
 
+	// Initialize QR styles with default values
+	updateQRStyle();
+
 	// Show the modal
 	modal.classList.add("show");
 
@@ -200,14 +203,78 @@ function closeQRModal() {
 	modal.classList.remove("show");
 }
 
+// Update QR code styling based on slider values
+function updateQRStyle() {
+	const qrContainer = document.getElementById("qr-code-container");
+	const paddingSlider = document.getElementById("qr-padding");
+	const radiusSlider = document.getElementById("qr-radius");
+	const paddingValue = document.getElementById("qr-padding-value");
+	const radiusValue = document.getElementById("qr-radius-value");
+
+	// Update display values
+	paddingValue.textContent = paddingSlider.value;
+	radiusValue.textContent = radiusSlider.value;
+
+	// Apply styles to container
+	qrContainer.style.padding = `${paddingSlider.value}px`;
+	qrContainer.style.borderRadius = `${radiusSlider.value}px`;
+}
+
 // Download QR code as PNG
 function downloadQRCode() {
 	const qrContainer = document.getElementById("qr-code-container");
 	const canvas = qrContainer.querySelector("canvas");
 
 	if (canvas) {
+		// Get current slider values
+		const padding = parseInt(document.getElementById("qr-padding").value);
+		const radius = parseInt(document.getElementById("qr-radius").value);
+
+		// Create a new canvas with padding and styling
+		const outputCanvas = document.createElement("canvas");
+		const ctx = outputCanvas.getContext("2d");
+
+		// Set canvas size to include padding
+		outputCanvas.width = canvas.width + padding * 2;
+		outputCanvas.height = canvas.height + padding * 2;
+
+		// Set compositing to ensure clean output
+		ctx.imageSmoothingEnabled = false;
+
+		// Draw white background with rounded corners
+		ctx.fillStyle = "#ffffff";
+		if (radius > 0) {
+			// Draw rounded rectangle
+			ctx.beginPath();
+			ctx.moveTo(radius, 0);
+			ctx.lineTo(outputCanvas.width - radius, 0);
+			ctx.quadraticCurveTo(outputCanvas.width, 0, outputCanvas.width, radius);
+			ctx.lineTo(outputCanvas.width, outputCanvas.height - radius);
+			ctx.quadraticCurveTo(
+				outputCanvas.width,
+				outputCanvas.height,
+				outputCanvas.width - radius,
+				outputCanvas.height
+			);
+			ctx.lineTo(radius, outputCanvas.height);
+			ctx.quadraticCurveTo(0, outputCanvas.height, 0, outputCanvas.height - radius);
+			ctx.lineTo(0, radius);
+			ctx.quadraticCurveTo(0, 0, radius, 0);
+			ctx.closePath();
+			ctx.fill();
+
+			// Clip to this path for the QR code
+			ctx.clip();
+		} else {
+			// Draw regular rectangle
+			ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
+		}
+
+		// Draw the QR code on top with padding
+		ctx.drawImage(canvas, padding, padding);
+
 		// Convert canvas to blob and download
-		canvas.toBlob((blob) => {
+		outputCanvas.toBlob(blob => {
 			const url = URL.createObjectURL(blob);
 			const link = document.createElement("a");
 			link.href = url;
