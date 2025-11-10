@@ -40,5 +40,5 @@ func setupEndpoints(db AdvancedDB, jwt JWTService) {
 	http.HandleFunc("/", epBase(db, jwt))
 	http.HandleFunc("/create-account", epCreateUserPage(db))
 	http.HandleFunc("/login", epLoginPage(db, jwt))
-	http.HandleFunc("/dashboard", epDashboardPage(db, jwt))
+	http.HandleFunc("/dashboard", epDashboardPage(jwt))
 }

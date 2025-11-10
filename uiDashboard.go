@@ -6,7 +6,7 @@ import (
 	"nyooom/logging"
 )
 
-func epDashboardPage(db AdvancedDB, jwt JWTService) http.HandlerFunc {
+func epDashboardPage(jwt JWTService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Verify user is authenticated
 		err := jwt.ReadAndValidateJWT(r)
