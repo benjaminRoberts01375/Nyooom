@@ -33,7 +33,9 @@
 		"Lrange",
 		"Hincrby",
 		"htmx",
-		"tmpl"
+		"tmpl",
+		"qrcode",
+		"yeqown"
 	],
 	"flagWords": ["hte", "nyoom", "yoom", "yooom"]
 }
