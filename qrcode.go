@@ -17,7 +17,7 @@ type nopCloser struct {
 
 func (nopCloser) Close() error { return nil }
 
-func epQRCode(db AdvancedDB) http.HandlerFunc {
+func epQRCode(db AdvancedDB, devMode bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		slug := strings.TrimPrefix(r.PathValue("id"), "/")
 
@@ -56,7 +56,9 @@ func epQRCode(db AdvancedDB) http.HandlerFunc {
 
 		// Send the QR code as PNG
 		w.Header().Set("Content-Type", "image/png")
-		w.Header().Set("Cache-Control", "public, max-age=86400") // Cache for 1 day
+		if !devMode {
+			w.Header().Set("Cache-Control", "public, max-age=86400") // Cache for 1 day
+		}
 		w.WriteHeader(http.StatusOK)
 		w.Write(buf.Bytes())
 	}
