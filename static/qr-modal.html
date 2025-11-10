@@ -10,15 +10,33 @@
 		<div class="qr-controls">
 			<div class="slider-control">
 				<label for="qr-padding"
-					>Padding: <span class="value-display"><span id="qr-padding-value">16</span> px</span></label
+					>Padding:
+					<span class="value-display"><span id="qr-padding-value">16</span> px</span></label
 				>
 				<input type="range" id="qr-padding" min="0" max="40" value="16" oninput="updateQRStyle()" />
 			</div>
 			<div class="slider-control">
 				<label for="qr-radius"
-					>Corner Radius: <span class="value-display"><span id="qr-radius-value">8</span> px</span></label
+					>Corner Radius:
+					<span class="value-display"><span id="qr-radius-value">8</span> px</span></label
 				>
 				<input type="range" id="qr-radius" min="0" max="32" value="8" oninput="updateQRStyle()" />
+			</div>
+			<div class="logo-control">
+				<label for="qr-logo">Logo (optional):</label>
+				<div class="logo-upload-wrapper">
+					<input type="file" id="qr-logo" accept="image/*" onchange="handleLogoUpload(event)" />
+					<div id="logo-preview" class="logo-preview"></div>
+					<button
+						type="button"
+						id="remove-logo-btn"
+						class="btn-remove-logo"
+						onclick="removeLogo()"
+						style="display: none"
+					>
+						Remove Logo
+					</button>
+				</div>
 			</div>
 		</div>
 		<div class="modal-footer">

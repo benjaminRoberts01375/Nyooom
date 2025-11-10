@@ -135,6 +135,92 @@
 	border: 1pt solid rgba(255, 255, 255, 0.1);
 }
 
+/* Logo Control */
+.logo-control {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.logo-control label {
+	color: var(--label);
+	font-size: 0.9rem;
+}
+
+.logo-upload-wrapper {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+}
+
+.logo-control input[type="file"] {
+	color: var(--label);
+	font-size: 0.85rem;
+	padding: 0.5rem;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1pt solid rgba(255, 255, 255, 0.1);
+	border-radius: 4pt;
+	cursor: pointer;
+	transition: background-color 0.2s, border-color 0.2s;
+}
+
+.logo-control input[type="file"]:hover {
+	background: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.2);
+}
+
+.logo-control input[type="file"]::file-selector-button {
+	background: rgba(255, 255, 255, 0.1);
+	color: var(--label);
+	border: none;
+	padding: 0.4rem 0.8rem;
+	border-radius: 3pt;
+	cursor: pointer;
+	margin-right: 0.75rem;
+	transition: background-color 0.2s;
+}
+
+.logo-control input[type="file"]::file-selector-button:hover {
+	background: rgba(255, 255, 255, 0.15);
+}
+
+.logo-preview {
+	display: none;
+	align-items: center;
+	justify-content: center;
+	min-height: 60px;
+	padding: 0.5rem;
+	background: rgba(255, 255, 255, 0.9);
+	border-radius: 4pt;
+	border: 1pt solid rgba(0, 0, 0, 0.1);
+}
+
+.logo-preview.show {
+	display: flex;
+}
+
+.logo-preview img {
+	max-width: 100px;
+	max-height: 100px;
+	object-fit: contain;
+}
+
+.btn-remove-logo {
+	padding: 0.5rem 1rem;
+	background: rgba(220, 38, 38, 0.1);
+	color: #ef4444;
+	border: 1pt solid rgba(220, 38, 38, 0.3);
+	border-radius: 4pt;
+	cursor: pointer;
+	font-size: 0.85rem;
+	transition: background-color 0.2s, border-color 0.2s;
+}
+
+.btn-remove-logo:hover {
+	background: rgba(220, 38, 38, 0.2);
+	border-color: rgba(220, 38, 38, 0.5);
+}
+
 .slider-control {
 	display: flex;
 	flex-direction: column;

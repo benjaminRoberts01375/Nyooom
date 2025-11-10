@@ -160,28 +160,24 @@ function deleteLink(slug) {
 		});
 }
 
+// Store the logo image data and current URL
+let qrLogoImage = null;
+let currentQRUrl = "";
+
 // Show QR code modal
 function showQRCode(slug) {
-	const url = window.location.origin + "/" + slug;
+	currentQRUrl = window.location.origin + "/" + slug;
 	const modal = document.getElementById("qr-modal");
-	const qrContainer = document.getElementById("qr-code-container");
 	const urlDisplay = document.querySelector(".qr-url-display");
 
-	// Clear previous QR code
-	qrContainer.innerHTML = "";
-
-	// Generate new QR code
-	new QRCode(qrContainer, {
-		text: url,
-		width: 256,
-		height: 256,
-		colorDark: "#000000",
-		colorLight: "#ffffff",
-		correctLevel: QRCode.CorrectLevel.H,
-	});
-
 	// Display the URL
-	urlDisplay.textContent = url;
+	urlDisplay.textContent = currentQRUrl;
+
+	// Reset logo
+	removeLogo();
+
+	// Generate QR code
+	generateQRCode();
 
 	// Initialize QR styles with default values
 	updateQRStyle();
@@ -197,10 +193,161 @@ function showQRCode(slug) {
 	};
 }
 
+// Generate QR code with optional logo
+function generateQRCode() {
+	const qrContainer = document.getElementById("qr-code-container");
+
+	// Clear previous QR code
+	qrContainer.innerHTML = "";
+
+	// Generate new QR code
+	new QRCode(qrContainer, {
+		text: currentQRUrl,
+		width: 256,
+		height: 256,
+		colorDark: "#000000",
+		colorLight: "#ffffff",
+		correctLevel: QRCode.CorrectLevel.H,
+	});
+
+	// If there's a logo, overlay it after the QR code is generated
+	if (qrLogoImage) {
+		// Wait for canvas to be available and fully rendered
+		waitForCanvasAndOverlay();
+	}
+}
+
+// Wait for canvas to be ready and then overlay logo
+function waitForCanvasAndOverlay() {
+	const qrContainer = document.getElementById("qr-code-container");
+	const canvas = qrContainer.querySelector("canvas");
+
+	if (canvas && canvas.width > 0) {
+		// Canvas is ready, overlay the logo
+		overlayLogoOnQR();
+	} else {
+		// Canvas not ready yet, check again in next frame
+		requestAnimationFrame(waitForCanvasAndOverlay);
+	}
+}
+
+// Overlay logo on the QR code canvas
+function overlayLogoOnQR() {
+	const qrContainer = document.getElementById("qr-code-container");
+	const canvas = qrContainer.querySelector("canvas");
+
+	if (!canvas || !qrLogoImage) return;
+
+	const ctx = canvas.getContext("2d");
+	ctx.imageSmoothingEnabled = true;
+
+	// Use 30% of QR code size as the maximum dimension for any logo
+	const maxLogoArea = canvas.width * 0.3;
+	const logoCenterX = canvas.width / 2;
+	const logoCenterY = canvas.height / 2;
+
+	// Calculate actual logo dimensions preserving aspect ratio
+	const logoAspect = qrLogoImage.width / qrLogoImage.height;
+	let logoWidth, logoHeight;
+
+	if (logoAspect > 1) {
+		// Wider than tall - constrain width
+		logoWidth = maxLogoArea;
+		logoHeight = maxLogoArea / logoAspect;
+	} else {
+		// Taller than wide or square - constrain height
+		logoHeight = maxLogoArea;
+		logoWidth = maxLogoArea * logoAspect;
+	}
+
+	// For very rectangular logos, scale up to fill more space
+	const aspectRatio = Math.max(logoAspect, 1 / logoAspect);
+	if (aspectRatio > 1.5) {
+		// Logo is rectangular - scale up by up to 20% to fill more space
+		const scaleFactor = Math.min(1.2, 1 + (aspectRatio - 1.5) * 0.2);
+		logoWidth *= scaleFactor;
+		logoHeight *= scaleFactor;
+	}
+
+	// Calculate background circle radius to fit the logo
+	const bgPadding = 6;
+	const logoMaxDimension = Math.max(logoWidth, logoHeight);
+	const bgRadius = (logoMaxDimension * Math.sqrt(2)) / 2 + bgPadding;
+
+	// Draw white background circle for logo
+	ctx.fillStyle = "#ffffff";
+	ctx.beginPath();
+	ctx.arc(logoCenterX, logoCenterY, bgRadius, 0, Math.PI * 2);
+	ctx.fill();
+
+	// Draw the logo centered with preserved aspect ratio
+	const logoX = logoCenterX - logoWidth / 2;
+	const logoY = logoCenterY - logoHeight / 2;
+	ctx.drawImage(qrLogoImage, logoX, logoY, logoWidth, logoHeight);
+}
+
 // Close QR code modal
 function closeQRModal() {
 	const modal = document.getElementById("qr-modal");
 	modal.classList.remove("show");
+}
+
+// Handle logo upload
+function handleLogoUpload(event) {
+	const file = event.target.files[0];
+	if (!file) return;
+
+	// Validate file type
+	if (!file.type.startsWith("image/")) {
+		alert("Please select a valid image file");
+		event.target.value = "";
+		return;
+	}
+
+	// Read the file and store it
+	const reader = new FileReader();
+	reader.onload = function (e) {
+		const img = new Image();
+		img.onload = function () {
+			qrLogoImage = img;
+
+			// Show preview
+			const preview = document.getElementById("logo-preview");
+			preview.innerHTML = "";
+			const previewImg = document.createElement("img");
+			previewImg.src = e.target.result;
+			preview.appendChild(previewImg);
+			preview.classList.add("show");
+
+			// Show remove button
+			document.getElementById("remove-logo-btn").style.display = "block";
+
+			// Regenerate QR code with logo
+			generateQRCode();
+		};
+		img.src = e.target.result;
+	};
+	reader.readAsDataURL(file);
+}
+
+// Remove logo
+function removeLogo() {
+	qrLogoImage = null;
+	const fileInput = document.getElementById("qr-logo");
+	const preview = document.getElementById("logo-preview");
+	const removeBtn = document.getElementById("remove-logo-btn");
+
+	if (fileInput) fileInput.value = "";
+	if (preview) {
+		preview.innerHTML = "";
+		preview.classList.remove("show");
+	}
+	if (removeBtn) removeBtn.style.display = "none";
+
+	// Regenerate QR code without logo
+	if (currentQRUrl) {
+		generateQRCode();
+	}
 }
 
 // Update QR code styling based on slider values
@@ -270,7 +417,7 @@ function downloadQRCode() {
 			ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
 		}
 
-		// Draw the QR code on top with padding
+		// Draw the QR code on top with padding (logo is already embedded in canvas)
 		ctx.drawImage(canvas, padding, padding);
 
 		// Convert canvas to blob and download
